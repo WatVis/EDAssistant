@@ -10,9 +10,11 @@ const in_path = process.argv[2];
 
 const notebook = new Notebook(in_path);
 
-var loc_set = notebook.slice(4, SliceDirection.Backward);
+console.log(notebook.getFuncs(2));
 
-for (let loc of loc_set.items) {
-  console.log(notebook.getCodeByLoc(loc));
-}
+// var loc_set = notebook.slice(4, SliceDirection.Backward);
+
+// for (let loc of loc_set.items) {
+//   console.log(notebook.getCodeByLoc(loc));
+// }
 
