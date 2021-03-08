@@ -16,7 +16,9 @@ const notebook = new Notebook(in_path);
 
 // console.log(notebook.getAllCode())
 
-notebook.extractEDA(out_path, name);
+try {
+    notebook.extractEDA(out_path, name);
+}catch {}
 
 // console.log(notebook.getFuncs(3));
 
