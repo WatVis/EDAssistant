@@ -9,7 +9,7 @@ import sys
 # node .\src\index.js 10269993 .\examples\
 def parse_file(in_path, out_path, dir_name):
   print("parsing {} to {}/{}.......".format(in_path, out_path, dir_name), flush = True)
-  subprocess.run(["node", ".\helloworld.js", in_path, out_path, dir_name])
+  subprocess.run(["node", "./helloworld.js", in_path, out_path, dir_name])
 
 # os.mkdir("..\kaggle-examples")
 # parse_file("10269993", ".\examples", "..\kaggle-examples")
