@@ -1,16 +1,24 @@
 import { Notebook } from '@ervin/python-program-analysis'
 import { SliceDirection } from '@ervin/python-program-analysis'
 
-if (process.argv.length != 3) {
+if (process.argv.length != 5) {
     console.log("Please provide notebook name and path.");
     process.exit();
 }
 
 const in_path = process.argv[2];
 
+const out_path = process.argv[3];
+
+const name = process.argv[4];
+
 const notebook = new Notebook(in_path);
 
-console.log(notebook.getFuncs(2));
+// console.log(notebook.getAllCode())
+
+notebook.extractEDA(out_path, name);
+
+// console.log(notebook.getFuncs(3));
 
 // var loc_set = notebook.slice(4, SliceDirection.Backward);
 
