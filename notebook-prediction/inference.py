@@ -25,38 +25,20 @@ from config import *
 
 class RetrivalDB:
   def __init__(self):
-    self.embed = np.load("embed_tensors.npy", allow_pickle=True)
-    self.kernel_ids = np.load("kernel_ids.npy", allow_pickle=True)
-    self.idx_list = []
-    idx = 0
-    doc_list = []
-    for doc in self.embed:
-      self.idx_list.append(idx)
-      idx += doc.shape[0]
-      doc_list.append(doc)
-    self.raw = np.concatenate(doc_list)
+    self.embed = np.load("codebase_embed.npy", allow_pickle=True)
+    self.kernel_ids = np.load("codebase_id.npy", allow_pickle=True)
 
   def getDoc(self, raw_idx):
-    if raw_idx < 0 or raw_idx >= self.raw.shape[0]:
+    if raw_idx < 0 or raw_idx >= self.embed.shape[0]:
       print("ERROR: out of index")
       return None
-    first = 0
-    last = len(self.idx_list) - 1
-    midpoint = (first + last)//2 
-    while True:
-      midpoint = (first + last)//2            
-      if self.idx_list[midpoint] <= raw_idx and self.idx_list[midpoint+1] > raw_idx:
-        break
-      else:
-        if raw_idx < self.idx_list[midpoint]:
-          last = midpoint-1
-        else:
-          first = midpoint+1  
-    kernel_id = self.kernel_ids[midpoint]
-    return (kernel_id, raw_idx - self.idx_list[midpoint])
+    kid = self.kernel_ids[raw_idx]
+    path = kid.split('##')[0]
+    lineno = int(kid.split('##')[1])
+    return path, lineno
 
   def find_sim(self, embed, topn=10):
-    result = np.einsum("ij,ij->i",self.raw,embed)
+    result = np.einsum("ij,ij->i",self.embed,embed)
     rank = np.argsort(-result)[:topn]
     doc_list = [self.getDoc(r) for r in rank]
     return doc_list
@@ -101,13 +83,13 @@ if __name__ == "__main__":
     
     doc_list = db.find_sim(predict_embed)
 
-    file_path = '../kaggle-dataset/sliced-notebooks-full-new'
+    file_path = '../../kaggle-dataset/sliced-notebooks-full-new'
 
     for kernel_id, cell_no in doc_list:
       print("############################")
       kernel_id = '/'.join(kernel_id.split('\\'))
-      source_path = '../kaggle-dataset/sliced-notebooks-full-new/{}.py'.format(kernel_id)
-      meta_path = '../kaggle-dataset/sliced-notebooks-full-new/{}.csv'.format(kernel_id)
+      source_path = '{}/{}.py'.format(file_path, kernel_id)
+      meta_path = '{}/{}.csv'.format(file_path, kernel_id)
       print("***KERNEL:", kernel_id)
       print("***PATH:", source_path, meta_path)
       print("***cell_no", cell_no)
