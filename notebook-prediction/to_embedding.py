@@ -21,7 +21,8 @@ def to_embedding(data, model):
   code_inputs = data[0].to(device)
   attn_mask = data[1].to(device)
   position_idx = data[2].to(device)  
-  code_vec = model(code_inputs=code_inputs,attn_mask=attn_mask,position_idx=position_idx)
+  with torch.no_grad():
+    code_vec = model(code_inputs=code_inputs,attn_mask=attn_mask,position_idx=position_idx)
   return code_vec
 
 class TextDataset(Dataset):
@@ -73,10 +74,12 @@ class TextDataset(Dataset):
     def __getitem__(self, idx): 
       input_feautres = self.examples[idx].input_features
       kernel_id = self.examples[idx].kernel_id
+      lib_names = []
       code_inputs = [] 
       attn_mask = []
       position_idx = []  
       for item in input_feautres:
+        lib_names.append(item.libs_names)
         c, a, p = self.__getFromFeatures(item)
         code_inputs.append(c)
         attn_mask.append(a)
@@ -86,10 +89,12 @@ class TextDataset(Dataset):
       attn_mask = torch.cat(attn_mask, dim=0)
       position_idx = torch.cat(position_idx, dim=0)
 
+      lib_names = np.array(lib_names, dtype=object)
+
       if self.get_embedding:
-        return to_embedding((code_inputs, attn_mask, position_idx), self.model), kernel_id
+        return to_embedding((code_inputs, attn_mask, position_idx), self.model), kernel_id, lib_names
       else:
-        return code_inputs, attn_mask, position_idx, kernel_id
+        return (code_inputs, attn_mask, position_idx), kernel_id, lib_names
 
 if __name__ == "__main__":
   device = torch.device("cuda" if torch.cuda.is_available() else "cpu") 
@@ -106,9 +111,12 @@ if __name__ == "__main__":
   dataset.set_max_size(12)
   all_tensors = []
   all_kernel_ids = []
+  all_libnames = []
   for idx in trange(len(dataset)):
     d = dataset[idx]
     all_tensors.append(d[0].cpu().detach().numpy())
     all_kernel_ids.append(d[1])
+    all_libnames.append(np.array(d[2]))
   np.save("./embed_tensors_test", np.array(all_tensors, dtype=object))
   np.save("./kernel_ids_test", np.array(all_kernel_ids, dtype=object))
+  np.save("./lib_names_test", np.array(all_libnames, dtype=object))

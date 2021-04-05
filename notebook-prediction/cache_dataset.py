@@ -20,7 +20,7 @@ def combine_features(item):
 if __name__ == "__main__":
   print("start parsing...")
   cpu_cont = 6
-  file_path = '../kaggle-dataset/sliced-notebooks-full-new'
+  file_path = '../../kaggle-dataset/sliced-notebooks-full-new'
   pool = multiprocessing.Pool(cpu_cont)
   flist = get_notebook_list(file_path)
   data=[]

@@ -1,5 +1,19 @@
 import numpy as np
 from tqdm import trange
+import pickle
+lib_names = np.load("lib_names.npy", allow_pickle=True)
+
+lib_list = []
+for lib_docs in lib_names:
+  for lib_cells in lib_docs:
+    lib_list.append(lib_cells)
+lib_unique = np.unique(np.concatenate(lib_list))
+lib_dict = {}
+for idx in trange(lib_unique.shape[0]):
+  lib_dict[lib_unique[idx]] = idx
+
+pickle.dump(lib_dict, open("lib_dict.pkl",'wb'))
+
 embeds = np.load("embed_tensors.npy", allow_pickle=True)
 kernel_ids = np.load("kernel_ids.npy", allow_pickle=True)
 

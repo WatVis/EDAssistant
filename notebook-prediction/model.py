@@ -1,5 +1,6 @@
 import torch.nn as nn
 import torch    
+import torch.nn.functional as F
 
 # BertModel from https://github.com/microsoft/CodeBERT/tree/master/GraphCodeBERT/codesearch
 # Licensed under the MIT License. Copyright (c) Microsoft Corporation.
@@ -46,7 +47,6 @@ class Generator(nn.Module):
         # unpacked_data = self.attn(unpacked_data)
         unpacked_data = self.trans(unpacked_data)
 
-
         loss = torch.FloatTensor([0]).to(device)
         for idx in range(len(lengths)):
           l = lengths[idx]
@@ -58,6 +58,39 @@ class Generator(nn.Module):
         return loss
 
     def generate_embedding(self, embed_list):
-      embed = self.trans(self.gru_unit(torch.cat(embed_list).view(-1, 1, 768))[0])[-1]
+      embed = self.trans(self.gru_unit(torch.cat(embed_list).view(-1, 1, self.embed_size))[0])[-1]
       return embed
- 
+
+# class GeneratorWithBert(nn.Module):
+#     def __init__(self, encoder, generator):
+#         super(BertModel, self).__init__()
+#         self.encoder = encoder
+#         self.generator = generator
+
+#     def forward(self, code_inputs=None, attn_mask=None,position_idx=None, nl_inputs=None, criterion, device="cuda"): 
+#         code_vec = self.encoder(code_inputs=code_inputs,attn_mask=attn_mask,position_idx=position_idx)
+
+class LibClassifier(nn.Module):
+    def __init__(self, backend, embed_size, clf_size):
+        super(LibClassifier, self).__init__()
+        self.backend = backend
+        self.clf_size = clf_size
+        self.fc = nn.Linear(embed_size, clf_size)
+
+    def forward(self, data, tgt, lengths, criterion, device="cuda"):
+        packed_data = torch.nn.utils.rnn.pack_padded_sequence(data, lengths)
+        packed_data, hiddens = self.backend.gru_unit(packed_data)
+        unpacked_data, lengths = torch.nn.utils.rnn.pad_packed_sequence(packed_data)
+        unpacked_data = self.backend.trans(unpacked_data)
+        predict_label = self.fc(unpacked_data)
+
+        loss = torch.FloatTensor([0]).to(device)
+        for idx in range(len(lengths)):
+          l = lengths[idx]
+
+          predict_data = predict_label[:, idx, :][:l][:-1]
+          tgt_data = tgt[:, idx, :][:l][1:]
+          
+          loss += criterion(predict_data, tgt_data)
+        
+        return loss

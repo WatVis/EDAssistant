@@ -58,57 +58,58 @@ if __name__ == "__main__":
   model.eval()
   db = RetrivalDB()
   
-  while(True):
-    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-    input("Update the sample.py and press Enter to continue...")
-    # TODO: reads ipynb
-    input_file = './sample.ipynb'
-    embed_list = []
-    f = codecs.open(input_file, 'r')
-    source = f.read()
+  with torch.no_grad():
+    while(True):
+      print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+      input("Update the sample.py and press Enter to continue...")
+      # TODO: reads ipynb
+      input_file = './sample.ipynb'
+      embed_list = [torch.zeros((1,768)).to(device)]
+      f = codecs.open(input_file, 'r')
+      source = f.read()
 
-    y = json.loads(source)
-    for x in y['cells']:
-        for x2 in x['source']:
-            if x2[-1] != '\n':
-                x2 = x2 + '\n'
-            embed_list.append(get_embedding(x2, device, model))
-    # with open(input_file, encoding='utf-8') as f:
-    #   # treat as one cell for now
-    #   embed_list.append(get_embedding(''.join(f.readlines()), device, model))
+      y = json.loads(source)
+      for x in y['cells']:
+          for x2 in x['source']:
+              if x2[-1] != '\n':
+                  x2 = x2 + '\n'
+              embed_list.append(get_embedding(x2, device, model))
+      # with open(input_file, encoding='utf-8') as f:
+      #   # treat as one cell for now
+      #   embed_list.append(get_embedding(''.join(f.readlines()), device, model))
 
-    predict_embed = gen.generate_embedding(embed_list)
+      predict_embed = gen.generate_embedding(embed_list)
 
-    predict_embed = [embed.detach().cpu().numpy() for embed in predict_embed]
-    
-    doc_list = db.find_sim(predict_embed)
+      predict_embed = [embed.detach().cpu().numpy() for embed in predict_embed]
+      
+      doc_list = db.find_sim(predict_embed)
 
-    file_path = '../../kaggle-dataset/sliced-notebooks-full-new'
+      file_path = '../../kaggle-dataset/sliced-notebooks-full-new'
 
-    for kernel_id, cell_no in doc_list:
-      print("############################")
-      kernel_id = '/'.join(kernel_id.split('\\'))
-      source_path = '{}/{}.py'.format(file_path, kernel_id)
-      meta_path = '{}/{}.csv'.format(file_path, kernel_id)
-      print("***KERNEL:", kernel_id)
-      print("***PATH:", source_path, meta_path)
-      print("***cell_no", cell_no)
-      df = pd.read_csv(meta_path)
-      cell_list = []
-      for index, row in df.iterrows():
-        cell_list.append((row['CELL'], row['USAGE']))
+      for kernel_id, cell_no in doc_list:
+        print("############################")
+        kernel_id = '/'.join(kernel_id.split('\\'))
+        source_path = '{}/{}.py'.format(file_path, kernel_id)
+        meta_path = '{}/{}.csv'.format(file_path, kernel_id)
+        print("***KERNEL:", kernel_id)
+        print("***PATH:", source_path, meta_path)
+        print("***cell_no", cell_no)
+        df = pd.read_csv(meta_path)
+        cell_list = []
+        for index, row in df.iterrows():
+          cell_list.append((row['CELL'], row['USAGE']))
 
-      print("***FUNCTIONS:", cell_list[cell_no][1])
-      with open(source_path, encoding='utf-8') as f:
-        start = 0
-        if cell_no != 0:
-          start = cell_list[cell_no-1][0]
-        end = cell_list[cell_no][0]
-        print("lineno start at:", start)
-        # if cell_no == len(cell_list) - 1:
-        #   print(''.join(f.readlines()[start:]))
-        # else:
-        print(''.join(f.readlines()[start:end]))
+        print("***FUNCTIONS:", cell_list[cell_no][1])
+        with open(source_path, encoding='utf-8') as f:
+          start = 0
+          if cell_no != 0:
+            start = cell_list[cell_no-1][0]
+          end = cell_list[cell_no][0]
+          print("lineno start at:", start)
+          # if cell_no == len(cell_list) - 1:
+          #   print(''.join(f.readlines()[start:]))
+          # else:
+          print(''.join(f.readlines()[start:end]))
 
     
         
