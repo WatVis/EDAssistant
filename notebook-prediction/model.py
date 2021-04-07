@@ -1,6 +1,7 @@
 import torch.nn as nn
 import torch    
 import torch.nn.functional as F
+import numpy as np
 
 # BertModel from https://github.com/microsoft/CodeBERT/tree/master/GraphCodeBERT/codesearch
 # Licensed under the MIT License. Copyright (c) Microsoft Corporation.
@@ -75,6 +76,7 @@ class LibClassifier(nn.Module):
         super(LibClassifier, self).__init__()
         self.backend = backend
         self.clf_size = clf_size
+        self.embed_size = embed_size
         self.fc = nn.Linear(embed_size, clf_size)
 
     def forward(self, data, tgt, lengths, criterion, device="cuda"):
@@ -85,12 +87,25 @@ class LibClassifier(nn.Module):
         predict_label = self.fc(unpacked_data)
 
         loss = torch.FloatTensor([0]).to(device)
-        for idx in range(len(lengths)):
-          l = lengths[idx]
+        if self.training:
+            for idx in range(len(lengths)):
+                l = lengths[idx]
+                predict_data = predict_label[:, idx, :][:l][:-1]
+                tgt_data = tgt[:, idx, :][:l][1:]
+                
+                loss += criterion(predict_data, tgt_data)
+        else:
+            for idx in range(len(lengths)):
+                l = lengths[idx]
+                predict_data = predict_label[:, idx, :][:l][:-1]
+                predict_set = (predict_data > 0.5).nonzero().detach().cpu().numpy()
+                tgt_data = tgt[:, idx, :][:l][1:]
+                tgt_set = (tgt_data > 0.5).nonzero().detach().cpu().numpy()
+                loss += len(np.intersect1d(predict_set, tgt_set)) / len(np.union1d(predict_set, tgt_set))
+            
+        return loss / len(lengths)
 
-          predict_data = predict_label[:, idx, :][:l][:-1]
-          tgt_data = tgt[:, idx, :][:l][1:]
-          
-          loss += criterion(predict_data, tgt_data)
-        
-        return loss
+    def classify(self, embed_list):
+      embed = self.fc(self.backend.trans(self.backend.gru_unit(torch.cat(embed_list).view(-1, 1, self.embed_size))[0])[-1])
+      label = torch.sigmoid(embed)
+      return label
