@@ -58,7 +58,7 @@ def collate_fn_padd(batch):
     lib_name = lib_name[:, perm_index, :]
     return embed, lib_name, lengths
 
-criterion = nn.BCEWithLogitsLoss()
+criterion = nn.BCEWithLogitsLoss(reduction="sum")
 
 def train_clf(embed, lib_name, model, optimizer, lengths):
     model.zero_grad()
@@ -103,9 +103,10 @@ if __name__ == "__main__":
 
 
   gen = Generator(768, 768).to(device)
-  # gen = torch.load(save_path + "/best_consine.pt")
+  gen = torch.load("./gen_consine/best_gen.pt").to(device)
   clf = LibClassifier(gen, 768, 16855).to(device)
-  optimizer = torch.optim.Adam(gen.parameters(), lr=2e-5) 
+  # clf = torch.load("./clf_saved/best_clf.pt").to(device)
+  optimizer = torch.optim.Adam(clf.parameters(), lr=2e-5) 
 
   eval_loss_list = []
 
@@ -115,13 +116,13 @@ if __name__ == "__main__":
     train_loss = train_iters(train_loader, clf, optimizer)
     print("train loss is: ", train_loss)
     eval_loss = eval(valid_loader, clf)
-    if len(eval_loss_list) == 0 or eval_loss < min(eval_loss_list):
+    if len(eval_loss_list) == 0 or eval_loss < max(eval_loss_list):
       print("Best eval, saved to disc")
-      torch.save(gen, save_path + "/best_clf.pt")
+      torch.save(clf, save_path + "/best_clf.pt")
     eval_loss_list.append(eval_loss)
     print("eval loss is: ", eval_loss)
-    print("best eval loss is ", min(eval_loss_list))
-    torch.save(gen, save_path + "/last_clf.pt")
+    print("best eval loss is ", max(eval_loss_list))
+    torch.save(clf, save_path + "/last_clf.pt")
 
     
 

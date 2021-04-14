@@ -35,7 +35,7 @@ if __name__ == "__main__":
 
   lib_dict = pickle.load(open("lib_dict.pkl",'rb'))   
   lib_dict = {v: k for k, v in lib_dict.items()}
-  clf = torch.load("./clf_saved/best_clf.pt").to(device)
+  clf = torch.load("./clf_jaccard/best_clf.pt").to(device)
   clf.eval()
   # model.eval()
   

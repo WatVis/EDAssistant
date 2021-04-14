@@ -39,8 +39,8 @@ class RetrivalDB:
 
   def find_sim(self, embed, topn=10):
     result = np.einsum("ij,ij->i",self.embed,embed)
-    rank = np.argsort(-result)[:topn]
-    doc_list = [self.getDoc(r) for r in rank]
+    rank = np.argsort(-result)
+    doc_list = [self.getDoc(r) + (result[r],) for r in rank]
     return doc_list
 
 if __name__ == "__main__":
@@ -70,15 +70,20 @@ if __name__ == "__main__":
 
       y = json.loads(source)
       for x in y['cells']:
+          code = ""
           for x2 in x['source']:
               if x2[-1] != '\n':
                   x2 = x2 + '\n'
-              embed_list.append(get_embedding(x2, device, model))
+              code += x2
+          embed_list.append(get_embedding(code, device, model))
+
       # with open(input_file, encoding='utf-8') as f:
       #   # treat as one cell for now
       #   embed_list.append(get_embedding(''.join(f.readlines()), device, model))
 
       predict_embed = gen.generate_embedding(embed_list)
+
+      print("??????", len(embed_list), predict_embed.mean())
 
       predict_embed = [embed.detach().cpu().numpy() for embed in predict_embed]
       
@@ -86,19 +91,37 @@ if __name__ == "__main__":
 
       file_path = '../../kaggle-dataset/sliced-notebooks-full-new'
 
-      for kernel_id, cell_no in doc_list:
-        print("############################")
-        kernel_id = '/'.join(kernel_id.split('\\'))
-        source_path = '{}/{}.py'.format(file_path, kernel_id)
-        meta_path = '{}/{}.csv'.format(file_path, kernel_id)
-        print("***KERNEL:", kernel_id)
-        print("***PATH:", source_path, meta_path)
-        print("***cell_no", cell_no)
-        df = pd.read_csv(meta_path)
-        cell_list = []
-        for index, row in df.iterrows():
-          cell_list.append((row['CELL'], row['USAGE']))
+      df_list = []
+      for kernel_id, cell_no, sim in doc_list:
+        competiton = kernel_id.split('\\')[0]
+        kid = kernel_id.split('\\')[1].split('_')[0]
+        subid = kernel_id.split('\\')[1].split('_')[1]
+        df_list.append((competiton, kid, subid,cell_no, sim))
+      df = pd.DataFrame(df_list, columns=["competiton", "kid", "subid","cell_no", "sim"])
+      df = df.drop_duplicates(subset=["kid"])
+      count = 0
+      file_path = '../../kaggle-dataset/sliced-notebooks-full-new'
+      print(df.head(100))
+      print(df.loc[df["competiton"]==("covid19-global-forecasting-week-3")].head(5))
+      for _, row in df.iterrows():
+        count += 1
+        if count > 10:
+          break
 
+        full_id = '{}/{}_{}'.format(row["competiton"], row["kid"], row["subid"])
+        source_path = '{}/{}.py'.format(file_path, full_id)
+        meta_path = '{}/{}.csv'.format(file_path, full_id)
+
+        cell_no = row["cell_no"]
+
+        print("***KERNEL:", row["kid"])
+        print("***PATH:", source_path, meta_path)
+        print("***cell_no", row["cell_no"])
+        print("***SIM", row["sim"])
+        meta_df = pd.read_csv(meta_path)
+        cell_list = []
+        for _, meta_row in meta_df.iterrows():
+          cell_list.append((meta_row['CELL'], meta_row['USAGE']))
         print("***FUNCTIONS:", cell_list[cell_no][1])
         with open(source_path, encoding='utf-8') as f:
           start = 0
@@ -106,10 +129,35 @@ if __name__ == "__main__":
             start = cell_list[cell_no-1][0]
           end = cell_list[cell_no][0]
           print("lineno start at:", start)
-          # if cell_no == len(cell_list) - 1:
-          #   print(''.join(f.readlines()[start:]))
-          # else:
           print(''.join(f.readlines()[start:end]))
+
+      # pickle.dump(doc_list,open("doc_list.pkl",'wb'))
+
+      # for kernel_id, cell_no, sim in doc_list:
+      #   print("############################")
+      #   kernel_id = '/'.join(kernel_id.split('\\'))
+      #   source_path = '{}/{}.py'.format(file_path, kernel_id)
+      #   meta_path = '{}/{}.csv'.format(file_path, kernel_id)
+      #   print("***KERNEL:", kernel_id)
+      #   print("***PATH:", source_path, meta_path)
+      #   print("***cell_no", cell_no)
+      #   print("***SIM", sim)
+      #   df = pd.read_csv(meta_path)
+      #   cell_list = []
+      #   for index, row in df.iterrows():
+      #     cell_list.append((row['CELL'], row['USAGE']))
+
+      #   print("***FUNCTIONS:", cell_list[cell_no][1])
+      #   with open(source_path, encoding='utf-8') as f:
+      #     start = 0
+      #     if cell_no != 0:
+      #       start = cell_list[cell_no-1][0]
+      #     end = cell_list[cell_no][0]
+      #     print("lineno start at:", start)
+      #     # if cell_no == len(cell_list) - 1:
+      #     #   print(''.join(f.readlines()[start:]))
+      #     # else:
+      #     print(''.join(f.readlines()[start:end]))
 
     
         
