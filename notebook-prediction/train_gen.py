@@ -114,11 +114,13 @@ if __name__ == "__main__":
     eval_loss = eval(valid_loader, gen)
     if len(eval_loss_list) == 0 or eval_loss < min(eval_loss_list):
       print("Best eval, saved to disc")
-      torch.save(gen, save_path + "/best_gen.pt")
+      # torch.save(gen, save_path + "/best_gen.pt")
+      torch.save(gen.state_dict(), save_path + "/best_gen_state_dict.pt")
     eval_loss_list.append(eval_loss)
     print("eval loss is: ", eval_loss)
     print("best eval loss is ", min(eval_loss_list))
-    torch.save(gen, save_path + "/last_gen.pt")
+    # torch.save(gen, save_path + "/last_gen.pt")
+    torch.save(gen.state_dict(), save_path + "/last_gen_state_dict.pt")
 
     
 

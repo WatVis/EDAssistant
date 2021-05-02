@@ -35,7 +35,10 @@ if __name__ == "__main__":
 
   lib_dict = pickle.load(open("lib_dict.pkl",'rb'))   
   lib_dict = {v: k for k, v in lib_dict.items()}
-  clf = torch.load("./clf_jaccard/best_clf.pt").to(device)
+  # clf = torch.load("./clf_jaccard/best_clf.pt").to(device)
+  gen = Generator(768, 768).to(device)
+  clf = LibClassifier(gen, 768, 16855).to(device)
+  clf.load_state_dict(torch.load('./clf_jaccard/best_clf_state_dict.pt'))
   clf.eval()
   # model.eval()
   

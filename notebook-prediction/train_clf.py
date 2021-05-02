@@ -103,7 +103,7 @@ if __name__ == "__main__":
 
 
   gen = Generator(768, 768).to(device)
-  gen = torch.load("./gen_consine/best_gen.pt").to(device)
+  # gen = torch.load("./gen_consine/best_gen.pt").to(device)
   clf = LibClassifier(gen, 768, 16855).to(device)
   # clf = torch.load("./clf_saved/best_clf.pt").to(device)
   optimizer = torch.optim.Adam(clf.parameters(), lr=2e-5) 
@@ -118,11 +118,13 @@ if __name__ == "__main__":
     eval_loss = eval(valid_loader, clf)
     if len(eval_loss_list) == 0 or eval_loss < max(eval_loss_list):
       print("Best eval, saved to disc")
-      torch.save(clf, save_path + "/best_clf.pt")
+      # torch.save(clf, save_path + "/best_clf.pt")
+      torch.save(clf.state_dict(), save_path + "/best_clf_state_dict.pt")
     eval_loss_list.append(eval_loss)
     print("eval loss is: ", eval_loss)
     print("best eval loss is ", max(eval_loss_list))
-    torch.save(clf, save_path + "/last_clf.pt")
+    # torch.save(clf, save_path + "/last_clf.pt")
+    torch.save(clf.state_dict(), save_path + "/last_clf_state_dict.pt")
 
     
 

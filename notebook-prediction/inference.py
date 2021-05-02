@@ -53,7 +53,9 @@ if __name__ == "__main__":
   output_dir = os.path.join('./saved_models/python', '{}'.format(checkpoint_prefix))  
   model.load_state_dict(torch.load(output_dir),strict=False)  
 
-  gen = torch.load("./gen_consine/best_gen.pt").to(device)
+  # gen = torch.load("./gen_consine/best_gen.pt").to(device)
+  gen = Generator(768, 768).to(device)
+  gen.load_state_dict(torch.load('./gen_saved/best_gen_state_dict.pt'))
   gen.eval()
   model.eval()
   db = RetrivalDB()
@@ -98,11 +100,13 @@ if __name__ == "__main__":
         subid = kernel_id.split('\\')[1].split('_')[1]
         df_list.append((competiton, kid, subid,cell_no, sim))
       df = pd.DataFrame(df_list, columns=["competiton", "kid", "subid","cell_no", "sim"])
-      df = df.drop_duplicates(subset=["kid"])
+      # df = df.drop_duplicates(subset=["kid"])
       count = 0
       file_path = '../../kaggle-dataset/sliced-notebooks-full-new'
       print(df.head(100))
-      print(df.loc[df["competiton"]==("covid19-global-forecasting-week-3")].head(5))
+      check_df = df.loc[df["competiton"]==("bengaliai-cv19")]
+      print(check_df.head(5))
+      print(check_df.loc[check_df["kid"] == "25847047"])
       for _, row in df.iterrows():
         count += 1
         if count > 10:

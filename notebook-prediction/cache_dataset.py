@@ -30,3 +30,14 @@ if __name__ == "__main__":
   examples = []
   examples=pool.map(combine_features, tqdm(data,total=len(data)))
   pickle.dump(examples,open(cache_file,'wb'))
+
+# if __name__ == "__main__":
+#   print("start parsing...")
+#   cpu_cont = 6
+#   file_path = '../../kaggle-dataset/sliced-notebooks-full-new'
+#   pool = multiprocessing.Pool(cpu_cont)
+#   flist = get_notebook_list(file_path)
+#   data=[]
+#   data=pool.map(parseNotebook, tqdm(flist, total=len(flist)))
+#   cache_file='./cache_doc2vec.pkl'
+#   pickle.dump(data,open(cache_file,'wb'))
