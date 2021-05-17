@@ -32,7 +32,7 @@ from gensim.models.doc2vec import Doc2Vec
 
 
 
-class RetrievalDB:
+class RetrievalDB_doc2vec:
 
     def __init__(self):
         self.embed = np.load('./bigfiles/embed_tensors_clean_apr29.npy',
@@ -78,7 +78,7 @@ class RetrievalDB:
         doc_list = [self.getDoc(r) for r in rank]
         return doc_list
 
-def inferenceRNN(notebookSrc, retrievalDB):
+def inferenceRNN_doc2vec(notebookSrc, retrievalDB):
     '''
     Infer the next code cell of a notebook with file specified by filepath
     Arguments: filepath : The path to the file that inference should be performed on. 

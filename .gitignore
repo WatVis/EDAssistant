@@ -2,5 +2,5 @@ notebook-preprocess/node_modules
 notebook-prediction/*.pkl
 notebook-prediction/*.npy
 notebook-prediction/saved_models
-flask-server-prototype/bigfiles
+flask-server/bigfiles
 *.pyc
