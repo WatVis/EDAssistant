@@ -62,6 +62,10 @@ class Generator(nn.Module):
       embed = self.trans(self.gru_unit(torch.cat(embed_list).view(-1, 1, self.embed_size))[0])[-1]
       return embed
 
+    def valid_embedding(self, embed):
+      embed = self.trans(self.gru_unit(embed.view(-1, 1, self.embed_size))[0])[-1]
+      return embed
+
 # class GeneratorWithBert(nn.Module):
 #     def __init__(self, encoder, generator):
 #         super(BertModel, self).__init__()
@@ -107,5 +111,10 @@ class LibClassifier(nn.Module):
 
     def classify(self, embed_list):
       embed = self.fc(self.backend.trans(self.backend.gru_unit(torch.cat(embed_list).view(-1, 1, self.embed_size))[0])[-1])
+      label = torch.sigmoid(embed)
+      return label
+
+    def validate(self, embed):
+      embed = self.fc(self.backend.trans(self.backend.gru_unit(embed.view(-1, 1, self.embed_size))[0])[-1])
       label = torch.sigmoid(embed)
       return label

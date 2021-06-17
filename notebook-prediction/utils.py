@@ -10,6 +10,8 @@ import os
 import pandas as pd
 import numpy as np
 import torch
+import nbformat
+import pickle
 
 # only contain code
 class InputFeatures(object):
@@ -84,6 +86,7 @@ def extract_dataflow(code, parser,lang):
         dfg=new_DFG
     except:
         dfg=[]
+        code_tokens = []
     return code_tokens,dfg   
 
 def convert_examples_to_features(code, libs):
@@ -202,3 +205,54 @@ def get_embedding(code, device, model, libs = None):
         torch.tensor(item.position_idx).view(1, -1).to(device))  
   
   return model(code_inputs=code_inputs,attn_mask=attn_mask,position_idx=position_idx)
+
+def readNotebookAsRaw(competition, kernel_id):
+    source_path = '../../kaggle-dataset/notebooks-full/'
+    file_path = "{}/{}/{}.ipynb".format(source_path, competition, kernel_id.split('_')[0])
+    nb = nbformat.read(file_path, nbformat.NO_CONVERT)
+    markdowns = [] # list of markdown for each code-markdown pair
+    source = []
+
+    for cell in nb['cells']:
+        if (cell['cell_type'] =='markdown'):
+            markdowns.append(cell['source'])
+        # else code or raw
+        elif (cell['cell_type'] =='code'):
+            source.extend(filter(lambda x: x != '', cell['source'].split('\n')))
+    return source
+
+def readNotebookWithNoMD(competition, kernel_id):
+    source_path = '../../kaggle-dataset/notebooks-noMD'
+    file_path = "{}/{}/{}.py".format(source_path, competition, kernel_id.split('_')[0])
+    with open(file_path) as f:
+      source = f.readlines()
+    return source
+
+def extractLoc(raw_source, loc_string):
+  loc_set = [loc.split(',') for loc in loc_string.split(";")]
+  source_list = []
+  for loc in loc_set:
+    start = int(loc[0])-1
+    end = int(loc[2])-1
+    if int(loc[3]) != 0:
+      end += 1
+    source_list.extend(raw_source[start:end])
+  return source_list
+
+def combine_features(item):
+  index, row = item
+  competition = row["competition"]
+  kernel_id = row["kernel_id"]
+  # source = '\n'.join(extractLoc(readNotebookAsRaw(competition, kernel_id), row['loc']))
+  source = ''.join(extractLoc(readNotebookWithNoMD(competition, kernel_id), row['loc']))
+  feature = convert_examples_to_features(source, None)
+  return feature
+
+def to_embedding(data, model, device):
+  code_inputs = data[0].to(device)
+  attn_mask = data[1].to(device)
+  position_idx = data[2].to(device)  
+  with torch.no_grad():
+    code_vec = model(code_inputs=code_inputs,attn_mask=attn_mask,position_idx=position_idx)
+  return code_vec
+
