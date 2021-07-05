@@ -82,6 +82,7 @@ class LibClassifier(nn.Module):
         self.clf_size = clf_size
         self.embed_size = embed_size
         self.fc = nn.Linear(embed_size, clf_size)
+        self.accuracy_type = 1
 
     def forward(self, data, tgt, lengths, criterion, device="cuda"):
         packed_data = torch.nn.utils.rnn.pack_padded_sequence(data, lengths)
@@ -105,7 +106,12 @@ class LibClassifier(nn.Module):
                 predict_set = (predict_data > 0.5).nonzero().detach().cpu().numpy()
                 tgt_data = tgt[:, idx, :][:l][1:]
                 tgt_set = (tgt_data > 0.5).nonzero().detach().cpu().numpy()
-                loss += len(np.intersect1d(predict_set, tgt_set)) / len(np.union1d(predict_set, tgt_set))
+                if self.accuracy_type == 1:
+                    #jaccard
+                    loss += len(np.intersect1d(predict_set, tgt_set)) / len(np.union1d(predict_set, tgt_set))
+                else:
+                    #normal accuracy
+                    loss += len(np.intersect1d(predict_set, tgt_set)) / len(tgt_set)
             
         return loss / len(lengths)
 

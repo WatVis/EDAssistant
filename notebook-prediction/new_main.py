@@ -25,7 +25,7 @@ from io import BytesIO
 ### TODO: move to utils
 
 if __name__ == "__main__":
-    mode = 'train_clf'
+    mode = 'inference_clf'
     data_type = 'train'
     # model_type = 'doc2vec'
     model_type = 'codeBERT'
@@ -641,6 +641,46 @@ if __name__ == "__main__":
                     print("{}, {}".format(competition, kernel_id))
                     print('\n'.join(extractLoc(raw_source, doc["loc"])))
 
+    if mode == "inference_clf":
+        config = RobertaConfig.from_pretrained(config_name if config_name else model_name_or_path)
+        tokenizer = RobertaTokenizer.from_pretrained(tokenizer_name)
+        model = RobertaModel.from_pretrained(model_name_or_path)    
+        model=BertModel(model).to(device)
+        checkpoint_prefix = 'checkpoint-best-mrr/model.bin'
+        output_dir = os.path.join('./saved_models/python', '{}'.format(checkpoint_prefix))  
+        model.load_state_dict(torch.load(output_dir),strict=False)  
+
+        lib_dict = pickle.load(open("lib_dict_new.pkl",'rb'))
+        lib_dict = {v: k for k, v in lib_dict.items()}
+        # clf = torch.load("./clf_jaccard/best_clf.pt").to(device)
+        gen = Generator(768, 768).to(device)
+        clf = LibClassifier(gen, 768, 19453).to(device)
+        clf.load_state_dict(torch.load('./clf_saved_codeBERT/best_clf_state_dict.pt'))
+        clf.eval()
+
+        with torch.no_grad():
+            while(True):
+                print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+                input("Update the sample.py and press Enter to continue...")
+                # TODO: reads ipynb
+                input_file = './sample.ipynb'
+                embed_list = [torch.zeros((1,768)).to(device)]
+                f = codecs.open(input_file, 'r')
+                source = f.read()
+
+                y = json.loads(source)
+                for x in y['cells']:
+                    for x2 in x['source']:
+                        if x2[-1] != '\n':
+                            x2 = x2 + '\n'
+                        embed_list.append(get_embedding(x2, device, model))
+
+                predict_embed = clf.classify(embed_list)
+                values, idxs = torch.topk(predict_embed, 5)
+                idxs = idxs.detach().cpu().numpy()[0]
+                print(idxs, values)
+                print([lib_dict[i] for i in idxs])
+
     if mode == "valid_clf":
         def collate_fn_padd(batch):
             ## padd
@@ -677,10 +717,10 @@ if __name__ == "__main__":
         train_dataset, valid_dataset, test_dataset = random_split(dataset, [train_size, valid_size, test_size], generator=torch.Generator().manual_seed(0))
         test_loader = DataLoader(valid_dataset, batch_size=32, collate_fn=collate_fn_padd, shuffle=False)
 
-        model_pth = "./clf_saved_new"
+        model_pth = "./clf_saved_codeBERT"
         gen = Generator(768, 768).to(device)
-        clf = LibClassifier(gen, 768, 16855).to(device)
-        clf.load_state_dict(torch.load('./{}/best_clf_state_dict.pt').format(model_pth))
+        clf = LibClassifier(gen, 768, 19453).to(device)
+        clf.load_state_dict(torch.load('./{}/best_clf_state_dict.pt'.format(model_pth)))
         clf.eval()
 
         print(eval(test_loader, clf))
