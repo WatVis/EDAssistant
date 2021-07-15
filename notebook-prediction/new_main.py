@@ -24,9 +24,14 @@ from io import BytesIO
 
 ### TODO: move to utils
 
+TRAIN_LIST = ['planet-understanding-the-amazon-from-space', 'tensorflow2-question-answering', 'nomad2018-predict-transparent-conductors', 'two-sigma-financial-news', 'machinery-tube-pricing', 'ieee-fraud-detection', 'rsna-intracranial-hemorrhage-detection', 'denoising-dirty-documents', 'traveling-santa-problem', 'detecting-insults-in-social-commentary', 'Kannada-MNIST', 'imaterialist-fashion-2019-FGVC6', 'home-depot-product-search-relevance', 'tmdb-box-office-prediction', 'deepfake-detection-challenge', 'global-wheat-detection', 'demand-forecasting-kernels-only', 'vsb-power-line-fault-detection', 'pkdd-15-taxi-trip-time-prediction-ii', 'santander-value-prediction-challenge', 'introducing-kaggle-scripts', 'nips-2017-non-targeted-adversarial-attack', 'icdm-2015-drawbridge-cross-device-connections', 'rsna-str-pulmonary-embolism-detection', 'favorita-grocery-sales-forecasting', 'pubg-finish-placement-prediction', 'bosch-production-line-performance', 'predict-west-nile-virus', 'google-football', 'finding-elo', 'lyft-motion-prediction-autonomous-vehicles', 'covid19-global-forecasting-week-1', 'open-images-2019-object-detection', 'landmark-recognition-challenge', 'santas-uncertain-bags', 'yelp-restaurant-photo-classification', 'covid19-global-forecasting-week-3', 'airbnb-recruiting-new-user-bookings', 'mercari-price-suggestion-challenge', 'tweet-sentiment-extraction', 'challenges-in-representation-learning-facial-expression-recognition-challenge', 'hashcode-photo-slideshow', 'nips-2017-defense-against-adversarial-attack', 'ghouls-goblins-and-ghosts-boo', 'sf-crime', 'recruit-restaurant-visitor-forecasting', 'coupon-purchase-prediction', 'seizure-prediction', '20-newsgroups-ciphertext-challenge', 'hashcode-drone-delivery', 'PLAsTiCC-2018', 'stumbleupon', 'melbourne-university-seizure-prediction', 'movie-review-sentiment-analysis-kernels-only', 'prostate-cancer-grade-assessment', 'expedia-hotel-recommendations', 'march-machine-learning-mania-2015', 'talkingdata-adtracking-fraud-detection', 'm5-forecasting-accuracy', 'homesite-quote-conversion', 'DontGetKicked', 'whats-cooking', 'amazon-employee-access-challenge', 'trackml-particle-identification', 'bigquery-geotab-intersection-congestion', 'tensorflow-speech-recognition-challenge', 'dog-breed-identification', 'nips-2017-targeted-adversarial-attack', 'costa-rican-household-poverty-prediction', 'gendered-pronoun-resolution', 'freesound-audio-tagging-2019', 'jigsaw-unintended-bias-in-toxicity-classification', 'text-normalization-challenge-english-language', 'forest-cover-type-prediction', 'state-farm-distracted-driver-detection', 'bioresponse', 'zillow-prize-1', 'iwildcam-2020-fgvc7', 'google-quest-challenge', 'cat-in-the-dat-ii', 'walmart-recruiting-store-sales-forecasting', 'inclusive-images-challenge', 'santa-gift-matching', 'predict-who-is-more-influential-in-a-social-network', 'crowdflower-search-relevance', 'passenger-screening-algorithm-challenge', 'microsoft-malware-prediction', 'nyc-taxi-trip-duration', 'landmark-retrieval-challenge', 'carvana-image-masking-challenge', 'tradeshift-text-classification', 'landmark-recognition-2019', 'whats-cooking-kernels-only', 'the-winton-stock-market-challenge', 'herbarium-2020-fgvc7', 'osic-pulmonary-fibrosis-progression', 'youtube8m', 'conways-reverse-game-of-life-2020', 'draper-satellite-image-chronology', 'telstra-recruiting-network', 'dont-call-me-turkey', 'random-acts-of-pizza', 'generative-dog-images', 'aerial-cactus-identification', 'allstate-claims-severity', 'nfl-big-data-bowl-2020', 'imet-2020-fgvc7', 'petfinder-adoption-prediction', 'jigsaw-toxic-comment-classification-challenge', 'walmart-recruiting-trip-type-classification', 'mens-machine-learning-competition-2018', 'kkbox-churn-prediction-challenge', 'intel-mobileodt-cervical-cancer-screening', 'porto-seguro-safe-driver-prediction', 'santa-workshop-tour-2019', 'halite', '3d-object-detection-for-autonomous-vehicles', 'santa-2019-revenge-of-the-accountants', 'galaxy-zoo-the-galaxy-challenge', 'donorschoose-application-screening', 'open-images-2019-visual-relationship', 'allstate-purchase-prediction-challenge', 'FacebookRecruiting', 'diabetic-retinopathy-detection', 'santander-customer-satisfaction', 'facebook-recruiting-iii-keyword-extraction', 'march-machine-learning-mania-2016', 'covid19-global-forecasting-week-2', 'instant-gratification', 'abstraction-and-reasoning-challenge', 'humpback-whale-identification', 'crowdflower-weather-twitter', 'cat-in-the-dat', 'data-science-bowl-2019', 'understanding_cloud_organization', 'GiveMeSomeCredit', 'jigsaw-multilingual-toxic-comment-classification', 'youtube8m-2019', 'grupo-bimbo-inventory-demand', 'elo-merchant-category-recommendation', 'painter-by-numbers', 'dstl-satellite-imagery-feature-detection', 'LANL-Earthquake-Prediction', 'msk-redefining-cancer-treatment', 'talkingdata-mobile-user-demographics', 'lish-moa', 'covid19-global-forecasting-week-4', 'poker-rule-induction', 'new-york-city-taxi-fare-prediction', 'alaska2-image-steganalysis', 'landmark-retrieval-2019', 'liberty-mutual-group-property-inspection-prediction', 'quora-question-pairs', 'cdiscount-image-classification-challenge', 'invasive-species-monitoring', 'recursion-cellular-image-classification', 'inaturalist-challenge-at-fgvc-2017', 'covid19-local-us-ca-forecasting-week-1', 'higgs-boson', 'bluebook-for-bulldozers', 'womens-machine-learning-competition-2018', 'transfer-learning-on-stack-exchange-tags', 'march-machine-learning-mania-2017', 'ciphertext-challenge-ii', 'data-science-bowl-2017', 'imaterialist-challenge-furniture-2018', 'imaterialist-fashion-2020-fgvc7', 'siim-isic-melanoma-classification', 'springleaf-marketing-response', 'see-click-predict-fix', 'recognizing-faces-in-the-wild', 'pku-autonomous-driving', 'multilabel-bird-species-classification-nips2013', 'imaterialist-challenge-fashion-2018', 'open-images-2019-instance-segmentation', 'conway-s-reverse-game-of-life', 'plant-seedlings-classification', 'noaa-fisheries-steller-sea-lion-population-count', 'womens-machine-learning-competition-2019', 'landmark-recognition-2020', 'trec-covid-information-retrieval', 'traveling-santa-2018-prime-paths', 'kuzushiji-recognition', 'imet-2019-fgvc6', 'spooky-author-identification', 'rsna-pneumonia-detection-challenge', 'instacart-market-basket-analysis', 'santander-customer-transaction-prediction', 'ciphertext-challenge-iii', 'sp-society-camera-model-identification']
+VALID_LIST = ['restaurant-revenue-prediction', 'google-cloud-ncaa-march-madness-2020-division-1-womens-tournament', 'sentiment-analysis-on-movie-reviews', 'bnp-paribas-cardif-claims-management', 'plant-pathology-2020-fgvc7', 'dsg-hackathon', 'flavours-of-physics', 'inaturalist-2019-fgvc6', 'google-ai-open-images-visual-relationship-track', 'covid19-global-forecasting-week-5', 'google-cloud-ncaa-march-madness-2020-division-1-mens-tournament', 'dont-overfit-ii', 'leaf-classification', 'stanford-covid-vaccine', 'trends-assessment-prediction', 'avazu-ctr-prediction', 'integer-sequence-learning', 'reducing-commercial-aviation-fatalities', 'loan-default-prediction', 'text-normalization-challenge-russian-language', 'kobe-bryant-shot-selection', 'home-credit-default-risk', 'human-protein-atlas-image-classification', 'predicting-red-hat-business-value', 'cifar-10', 'avito-duplicate-ads-detection', 'expedia-personalized-sort', 'liverpool-ion-switching', 'avito-demand-prediction', 'rossmann-store-sales', 'santas-stolen-sleigh', 'iwildcam-2019-fgvc6', 'flavours-of-physics-kernels-only', 'two-sigma-financial-modeling', 'career-con-2019', 'the-nature-conservancy-fisheries-monitoring', 'dogs-vs-cats', 'how-much-did-it-rain-ii', 'avito-context-ad-clicks', 'pkdd-15-predict-taxi-service-trajectory-i', 'asap-aes', 'birdsong-recognition', 'ultrasound-nerve-segmentation', 'youtube8m-2018', 'unimelb', 'web-traffic-time-series-forecasting', 'airbus-ship-detection', 'event-recommendation-engine-challenge', 'second-annual-data-science-bowl', 'tgs-salt-identification-challenge', 'prudential-life-insurance-assessment', 'hivprogression', 'google-ai-open-images-object-detection-track', 'cvpr-2018-autonomous-driving', 'landmark-retrieval-2020', 'bike-sharing-demand', 'how-much-did-it-rain', 'mercedes-benz-greener-manufacturing', 'freesound-audio-tagging', 'bengaliai-cv19', 'statoil-iceberg-classifier-challenge', 'kddcup2012-track2', 'quora-insincere-questions-classification', 'data-science-bowl-2018', 'shelter-animal-outcomes', 'job-salary-prediction', 'dogs-vs-cats-redux-kernels-edition']
+TEST_LIST = ['aptos2019-blindness-detection', 'ga-customer-revenue-prediction', 'histopathologic-cancer-detection', 'mens-machine-learning-competition-2019', 'champs-scalar-coupling', 'whale-categorization-playground', 'flower-classification-with-tpus', 'sberbank-russian-housing-market', 'outbrain-click-prediction', 'two-sigma-connect-rental-listing-inquiries', 'facebook-v-predicting-check-ins', 'quickdraw-doodle-recognition', 'otto-group-product-classification-challenge', 'acquire-valued-shoppers-challenge', 'grasp-and-lift-eeg-detection', 'ashrae-energy-prediction', 'forest-cover-type-kernels-only', 'siim-acr-pneumothorax-segmentation', 'santander-product-recommendation', 'severstal-steel-defect-detection', 'm5-forecasting-uncertainty', 'kkbox-music-recommendation-challenge']
+
 if __name__ == "__main__":
-    mode = 'inference_clf'
+    mode = 'inference_gen'
     data_type = 'train'
+    # data_type = 'fake'
     # model_type = 'doc2vec'
     model_type = 'codeBERT'
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -69,16 +74,25 @@ if __name__ == "__main__":
             return self.__getFromFeatures(self.feautres[idx])
 
     class genDataset(Dataset):
-        def __init__(self, df_file, embed_file, with_libs=False):
+        def __init__(self, df_file, embed_file, with_libs=False, competition_filter=None):
             df = pd.read_csv(df_file)
             # TODO: filter out some competitions to be the training set
             self.embed_arr = np.load(embed_file)
+            self.raw_embed = self.embed_arr
+
+            if competition_filter is not None:
+                mask = df["competition"].isin(competition_filter)
+                filter_indexes = np.flatnonzero(mask)
+                df = df[mask].reset_index(drop=True)
+                self.embed_arr = self.embed_arr[filter_indexes]
+
             split_idx = df.index[df['cell_no'] == 0].tolist()
             self.cell_idx = []
             # filter out those length = 1
             for idx in range(len(split_idx) - 1):
                 start, end = split_idx[idx], split_idx[idx+1]-1
-                if end - start > 0 and end - start < 12:
+                # could restrict seq length here
+                if end - start > 0 and end - start < 99:
                     self.cell_idx.append((start, end))
 
             self.with_libs = with_libs
@@ -116,14 +130,17 @@ if __name__ == "__main__":
     if mode == 'parse':
         print("start parsing...")
         cpu_cont = 6
-        file_path = '../../kaggle-dataset/notebooks-locset/'
+        if data_type == 'fake':
+            file_path = '../../kaggle-dataset/notebooks-locset-fake/'
+        else:
+            file_path = '../../kaggle-dataset/notebooks-locset/'
         dirpath, dirnames, _ = next(os.walk(file_path))
         file_list = []
         
         count = 0
         for dir_name in dirnames:
             if dir_name == 'extra_kaggle':
-                if data_type == 'train':
+                if data_type == 'train' or data_type == "fake":
                     continue
             else:
                 if data_type == 'test' or data_type == 'valid':
@@ -143,6 +160,9 @@ if __name__ == "__main__":
         cell_list = []
         for idx in trange(len(file_list)):
             fpath, competition, kernel_id = file_list[idx]
+            if data_type == "fake":
+                # fake idx 0
+                kernel_id = kernel_id+"_0"
             df = pd.read_csv("{}.csv".format(fpath))
             df['cell_no'] = df.index
             df['competition'] = competition
@@ -158,44 +178,35 @@ if __name__ == "__main__":
     if mode == 'combine':
         print("start combining...")
         df = pd.read_csv("{}_loc_dataset.csv".format(data_type))
-        # index = int(len(df)/2)
-        # index = 1000
-        # df = df[:index]
-        # df = df[index:]
         cpu_cont = 6
         pool = multiprocessing.Pool(cpu_cont)
 
-        length = len(df)
+        data = df.iterrows()
+        cache_data = pool.map(combine_features, tqdm(data, total=df.shape[0]))
+        pickle.dump(cache_data,open("{}_cache.pkl".format(data_type),'wb'))
+
+        # length = len(df)
         
-        chunk_size = 354000
+        # chunk_size = 354000
 
-        num_chunk = int(length / chunk_size)
-        if length % chunk_size != 0:
-            num_chunk += 1
+        # num_chunk = int(length / chunk_size)
+        # if length % chunk_size != 0:
+        #     num_chunk += 1
 
-        print(num_chunk)
+        # print(num_chunk)
 
-        for idx in range(num_chunk):
-            cur_df = df[chunk_size*idx:chunk_size*(idx+1)]
-            data = cur_df.iterrows()
-            print(len(df[chunk_size*idx:chunk_size*(idx+1)]))
-            code_inputs = [] 
-            attn_mask = []
-            position_idx = [] 
-            count = 0
-            cache_data = []
-            cache_data = pool.map(combine_features, tqdm(data, total=cur_df.shape[0]))
-            pickle.dump(cache_data,open("train_split4/{}_cache_{}.pkl".format(data_type, idx),'wb'))
-            del cache_data
-        
-        # c, a, p = zip(*pool.map(map_func, tqdm(data, total=df.shape[0])))
-        # bc = np.concatenate(c, axis=0)
-        # ba = np.concatenate(a, axis=0)
-        # bp = np.concatenate(p, axis=0)
-        # print(bc.shape, ba.shape, bp.shape)
-        # np.save("./valid_code_ids", bc)
-        # np.save("./valid_attn_mask", ba)
-        # np.save("./valid_position_idx", bp)
+        # for idx in range(num_chunk):
+        #     cur_df = df[chunk_size*idx:chunk_size*(idx+1)]
+        #     data = cur_df.iterrows()
+        #     print(len(df[chunk_size*idx:chunk_size*(idx+1)]))
+        #     code_inputs = [] 
+        #     attn_mask = []
+        #     position_idx = [] 
+        #     count = 0
+        #     cache_data = []
+        #     cache_data = pool.map(combine_features, tqdm(data, total=cur_df.shape[0]))
+        #     pickle.dump(cache_data,open("train_split4/{}_cache_{}.pkl".format(data_type, idx),'wb'))
+        #     del cache_data
 
     if mode == 'embed':
         print("loading model...")
@@ -215,30 +226,30 @@ if __name__ == "__main__":
         # lobc = np.split(loc, np.arange(batch_size, length, batch_size))
         # loba = np.split(loa, np.arange(batch_size, length, batch_size))
         # lobp = np.split(lop, np.arange(batch_size, length, batch_size))
-        for idx in range(4):
-            count = 0
-            embed_list = []
-            print("loading dataset...")
-            dataset = customDataset("train_split4/{}_cache_{}.pkl".format(data_type, idx))
-            loader = DataLoader(dataset, batch_size=32, shuffle=False, drop_last=False)
-            for data in tqdm(loader, total=len(loader)):
-                # bc = torch.from_numpy(lobc[idx])
-                # ba = torch.from_numpy(loba[idx])
-                # bp = torch.from_numpy(lobp[idx])
-                bc, ba, bp = data
-                embed = to_embedding((bc, ba, bp), model, device).cpu().detach().numpy()
-                embed_list.append(embed)
+        # for idx in range(4):
+        embed_list = []
+        print("loading dataset...")
+        # dataset = customDataset("train_split4/{}_cache_{}.pkl".format(data_type, idx))
+        dataset = customDataset("{}_cache.pkl".format(data_type))
+        loader = DataLoader(dataset, batch_size=32, shuffle=False, drop_last=False)
+        for data in tqdm(loader, total=len(loader)):
+            # bc = torch.from_numpy(lobc[idx])
+            # ba = torch.from_numpy(loba[idx])
+            # bp = torch.from_numpy(lobp[idx])
+            bc, ba, bp = data
+            embed = to_embedding((bc, ba, bp), model, device).cpu().detach().numpy()
+            embed_list.append(embed)
 
-            final_arr = np.concatenate(embed_list, axis=0)
-            print(final_arr.shape)
-            np.save("train_split4//{}_embed_list_{}".format(data_type, idx), final_arr)
+        final_arr = np.concatenate(embed_list, axis=0)
+        print(final_arr.shape)
+        np.save("{}_embed_list".format(data_type), final_arr)
 
-        data.append(np.load("train_split4/train_embed_list_0.npy"))
-        data.append(np.load("train_split4/train_embed_list_1.npy"))
-        data.append(np.load("train_split4/train_embed_list_2.npy"))
-        data.append(np.load("train_split4/train_embed_list_3.npy"))
-        final = np.concatenate(data, axis=0)
-        np.save("train_split4/train_embed_list_total", final)
+        # data.append(np.load("train_split4/train_embed_list_0.npy"))
+        # data.append(np.load("train_split4/train_embed_list_1.npy"))
+        # data.append(np.load("train_split4/train_embed_list_2.npy"))
+        # data.append(np.load("train_split4/train_embed_list_3.npy"))
+        # final = np.concatenate(data, axis=0)
+        # np.save("train_split4/train_embed_list_total", final)
 
     if mode == 'embed_doc2vec':
         def tokenize_code(code, cell_type="code"):
@@ -349,25 +360,29 @@ if __name__ == "__main__":
             return total_loss / total
 
         df_file = "{}_loc_dataset.csv".format(data_type)
-        # embed_file = "train_split4/{}_embed_list_total.npy".format(data_type)
         embed_file = "{}_embed_list_{}.npy".format(data_type, model_type)
-        dataset = genDataset(df_file, embed_file)
-        train_size = int(len(dataset) * 0.7)
-        valid_size = int(len(dataset) * 0.2)
-        test_size = len(dataset) - train_size - valid_size
 
-        train_dataset, valid_dataset, test_dataset = random_split(dataset, [train_size, valid_size, test_size], generator=torch.Generator().manual_seed(0))
+        # dataset = genDataset(df_file, embed_file)
+        # train_size = int(len(dataset) * 0.7)
+        # valid_size = int(len(dataset) * 0.2)
+        # test_size = len(dataset) - train_size - valid_size
+        # train_dataset, valid_dataset, test_dataset = random_split(dataset, [train_size, valid_size, test_size], generator=torch.Generator().manual_seed(0))
+        # train_loader = DataLoader(train_dataset, batch_size=32, collate_fn=collate_fn_padd, shuffle=True)
+        # valid_loader = DataLoader(valid_dataset, batch_size=32, collate_fn=collate_fn_padd, shuffle=False)
+        train_dataset = genDataset(df_file, embed_file, with_libs=False, competition_filter=TRAIN_LIST)
+        valid_dataset = genDataset(df_file, embed_file, with_libs=False, competition_filter=VALID_LIST)
+        print(len(train_dataset), len(valid_dataset))
         train_loader = DataLoader(train_dataset, batch_size=32, collate_fn=collate_fn_padd, shuffle=True)
         valid_loader = DataLoader(valid_dataset, batch_size=32, collate_fn=collate_fn_padd, shuffle=False)
 
-        # save_path = "./gen_saved"
-        # save_path = "./gen_ranked_new"
-        # save_path = "./gen_cosine_new2"
-        save_path = "./gen_cosine_new_doc2vec"
+        save_path = "./selected_models/gen_cosine_doc2vec_newsplit"
+        # save_path = "./selected_models/gen_cosine_codeBERT_newsplit"
 
         gen = Generator(768, 768).to(device)
         # gen = torch.load(save_path + "/last_gen.pt")
-        optimizer_gen = torch.optim.Adam(gen.parameters(), lr=2e-5) 
+        # optimizer_gen = torch.optim.Adam(gen.parameters(), lr=2e-5) 
+        # optimizer_gen = torch.optim.Adam(gen.parameters(), lr=5e-6) 
+        optimizer_gen = torch.optim.Adam(gen.parameters(), lr=1e-6) 
         eval_loss_list = []
 
         for epoch_no in range(100):
@@ -460,16 +475,18 @@ if __name__ == "__main__":
         df_file = "{}_loc_dataset.csv".format(data_type)
         # embed_file = "train_split4/{}_embed_list_total.npy".format(data_type)
         embed_file = "{}_embed_list_{}.npy".format(data_type, model_type)
-        dataset = genDataset(df_file, embed_file, with_libs=True)
-        train_size = int(len(dataset) * 0.7)
-        valid_size = int(len(dataset) * 0.2)
-        test_size = len(dataset) - train_size - valid_size
-
-        train_dataset, valid_dataset, test_dataset = random_split(dataset, [train_size, valid_size, test_size], generator=torch.Generator().manual_seed(0))
+        # dataset = genDataset(df_file, embed_file, with_libs=True)
+        # train_size = int(len(dataset) * 0.7)
+        # valid_size = int(len(dataset) * 0.2)
+        # test_size = len(dataset) - train_size - valid_size
+        # train_dataset, valid_dataset, test_dataset = random_split(dataset, [train_size, valid_size, test_size], generator=torch.Generator().manual_seed(0))
+        train_dataset = genDataset(df_file, embed_file, with_libs=True, competition_filter=TRAIN_LIST)
+        valid_dataset = genDataset(df_file, embed_file, with_libs=True, competition_filter=VALID_LIST)
+        print(len(train_dataset), len(valid_dataset))
         train_loader = DataLoader(train_dataset, batch_size=32, collate_fn=collate_fn_padd, shuffle=True)
         valid_loader = DataLoader(valid_dataset, batch_size=32, collate_fn=collate_fn_padd, shuffle=False)
 
-        save_path = "./clf_saved_codeBERT"
+        save_path = "./clf_saved_doc2vec_newsplit"
 
         gen = Generator(768, 768).to(device)
         # gen = torch.load("./gen_consine/best_gen.pt").to(device)
@@ -482,7 +499,7 @@ if __name__ == "__main__":
 
         print("training clf model...")
 
-        for epoch_no in range(200):
+        for epoch_no in range(100):
             print("################TRAIN #{} EPOCH################".format(epoch_no))
             train_loss = train_iters(train_loader, clf, optimizer)
             print("train loss is: ", train_loss)
@@ -520,38 +537,37 @@ if __name__ == "__main__":
                 return (np.vstack([np.zeros((1,768)), notebook_embeds]), start, end)
 
         df_file = "{}_loc_dataset.csv".format(data_type)
-        # embed_file = "train_split4/{}_embed_list_total.npy".format(data_type)
         embed_file = "{}_embed_list_{}.npy".format(data_type, model_type)
+        # embed_file = "{}_embed_list_{}.npy".format("train", model_type)
 
         # gen = torch.load("./gen_consine/best_gen.pt").to(device)
         gen = Generator(768, 768).to(device)
-        model_path = "./gen_cosine_new_doc2vec"
-        # model_path = "./gen_cosine_new"
+        # model_path = "./selected_models/gen_cosine_doc2vec_newsplit"
+        model_path = "./selected_models/FAKE_gen_cosine_codeBERT_newsplit"
         gen.load_state_dict(torch.load('{}/best_gen_state_dict.pt'.format(model_path)))
         gen.eval()
         # model.eval()
         print('start validating')
-        # df = pd.read_csv("{}_loc_dataset.csv".format(data_type))
-        # embed_arr = torch.from_numpy(np.load("train_split4/{}_embed_list_total.npy".format(data_type))).to(device)
-        # split_idx = df.index[df['cell_no'] == 0].tolist()
-        dataset = validDataset(df_file, embed_file)
-        train_size = int(len(dataset) * 0.7)
-        valid_size = int(len(dataset) * 0.2)
-        test_size = len(dataset) - train_size - valid_size
 
-        embed_arr = torch.from_numpy(dataset.embed_arr).to(device)
+        # dataset = validDataset(df_file, embed_file)
+        # train_size = int(len(dataset) * 0.7)
+        # valid_size = int(len(dataset) * 0.2)
+        # test_size = len(dataset) - train_size - valid_size
 
-        train_dataset, valid_dataset, test_dataset = random_split(dataset, [train_size, valid_size, test_size], generator=torch.Generator().manual_seed(0))
+        # embed_arr = torch.from_numpy(dataset.embed_arr).to(device)
+
+        # train_dataset, valid_dataset, test_dataset = random_split(dataset, [train_size, valid_size, test_size], generator=torch.Generator().manual_seed(0))
+
+        test_dataset = genDataset(df_file, embed_file, with_libs=False, competition_filter=TEST_LIST)
+
+        # embed_arr = torch.from_numpy(dataset.embed_arr).to(device)
+        embed_arr = torch.from_numpy(test_dataset.embed_arr).to(device)
 
         rank_list = []
         with torch.no_grad():
-            # for i in trange(len(split_idx) - 1):
-            #     start, end = split_idx[i], split_idx[i+1]-1
-            #     if end - start <= 1:
-            #         continue
-            #     notebook_embeds = embed_arr[start:end]
             for i in trange(len(test_dataset)):
-                notebook_embeds, start, end = test_dataset[i]
+                notebook_embeds = test_dataset[i]
+                start, end = test_dataset.cell_idx[i]
                 notebook_embeds = torch.from_numpy(notebook_embeds).to(device).float()
                 length = notebook_embeds.shape[0]
                 # rank_list = []
@@ -567,10 +583,9 @@ if __name__ == "__main__":
                     # print(rank_list[-1])
                     # actual_meta = df.loc[start + idx]
                     # print(actual_meta)
-                # print(rank_list)
         rank_list = np.array(rank_list)
         print(np.mean(rank_list))
-        np.save('./{}_rank_list_valid_{}'.format(data_type, model_type), rank_list)
+        np.save('./FAKE_{}_rank_list_valid_newsplit_{}'.format(data_type, model_type), rank_list)
 
     if mode == 'inference_gen':
         print("start inferencing...")
@@ -589,7 +604,8 @@ if __name__ == "__main__":
         codebase_embed = np.load("train_split4/{}_embed_list_total.npy".format(data_type))
 
         gen = Generator(768, 768).to(device)
-        gen.load_state_dict(torch.load('./gen_saved/best_gen_state_dict.pt'))
+        # gen.load_state_dict(torch.load('./gen_saved/best_gen_state_dict.pt'))
+        gen.load_state_dict(torch.load('./selected_models/gen_cosine_codeBERT_newsplit/best_gen_state_dict.pt'))
         gen.eval()
         with torch.no_grad():
             while(True):
@@ -709,15 +725,17 @@ if __name__ == "__main__":
         df_file = "{}_loc_dataset.csv".format(data_type)
         # embed_file = "train_split4/{}_embed_list_total.npy".format(data_type)
         embed_file = "{}_embed_list_{}.npy".format(data_type, model_type)
-        dataset = genDataset(df_file, embed_file, with_libs=True)
-        train_size = int(len(dataset) * 0.7)
-        valid_size = int(len(dataset) * 0.2)
-        test_size = len(dataset) - train_size - valid_size
+        # dataset = genDataset(df_file, embed_file, with_libs=True)
+        # train_size = int(len(dataset) * 0.7)
+        # valid_size = int(len(dataset) * 0.2)
+        # test_size = len(dataset) - train_size - valid_size
 
-        train_dataset, valid_dataset, test_dataset = random_split(dataset, [train_size, valid_size, test_size], generator=torch.Generator().manual_seed(0))
-        test_loader = DataLoader(valid_dataset, batch_size=32, collate_fn=collate_fn_padd, shuffle=False)
+        # train_dataset, valid_dataset, test_dataset = random_split(dataset, [train_size, valid_size, test_size], generator=torch.Generator().manual_seed(0))
 
-        model_pth = "./clf_saved_codeBERT"
+        test_dataset = genDataset(df_file, embed_file, with_libs=True, competition_filter=TEST_LIST)
+        test_loader = DataLoader(test_dataset, batch_size=32, collate_fn=collate_fn_padd, shuffle=False)
+
+        model_pth = "./clf_saved_codeBERT_newsplit"
         gen = Generator(768, 768).to(device)
         clf = LibClassifier(gen, 768, 19453).to(device)
         clf.load_state_dict(torch.load('./{}/best_clf_state_dict.pt'.format(model_pth)))
@@ -725,67 +743,4 @@ if __name__ == "__main__":
 
         print(eval(test_loader, clf))
 
-
-    if mode == 'valid_clf_old':
-        print("loading model...")
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        config = RobertaConfig.from_pretrained(config_name if config_name else model_name_or_path)
-        tokenizer = RobertaTokenizer.from_pretrained(tokenizer_name)
-        model = RobertaModel.from_pretrained(model_name_or_path)    
-        model=BertModel(model).to(device)
-        checkpoint_prefix = 'checkpoint-best-mrr/model.bin'
-        output_dir = os.path.join('./saved_models/python', '{}'.format(checkpoint_prefix))  
-        model.load_state_dict(torch.load(output_dir),strict=False)  
-
-        lib_dict = pickle.load(open("lib_dict.pkl",'rb'))   
-        lib_dict = {v: k for k, v in lib_dict.items()}
-        # clf = torch.load("./clf_jaccard/best_clf.pt").to(device)
-        gen = Generator(768, 768).to(device)
-        clf = LibClassifier(gen, 768, 16855).to(device)
-        clf.load_state_dict(torch.load('./clf_jaccard/best_clf_state_dict.pt'))
-        clf.eval()
-        model.eval()
-        print('start validating')
-        df = pd.read_csv("{}_loc_dataset.csv".format(data_type))
-
-        embed_arr = torch.from_numpy(np.load("./{}_embed_list.npy").format(data_type)).to(device)
-        split_idx = df.index[df['cell_no'] == 0].tolist()
-        acc_list = []
-        with torch.no_grad():
-            for i in trange(len(split_idx) - 1):
-                start, end = split_idx[i], split_idx[i+1]-1
-                if end - start <= 1:
-                    continue
-                notebook_embeds = embed_arr[start:end]
-                length = notebook_embeds.shape[0]
-                for idx in range(1, length):
-                    predict_embed = clf.validate(notebook_embeds[:idx])
-                    values, idxs = torch.topk(predict_embed, 5)
-                    idxs = idxs.detach().cpu().numpy()[0]
-                    actual_meta = df.loc[start + idx]
-                    actual_libs = []
-                    actual_usages = actual_meta['usages'].split(', ')
-                    for idx in range(0, len(actual_usages), 2):
-                        # actual_libs.append("{}.{}".format(actual_usages[idx], actual_usages[idx+1]))
-                        actual_libs.append("{}".format(actual_usages[idx].split('.')[0]))
-                    #print(idxs, values)
-                    libs = [lib_dict[i] for i in idxs]
-                    libs = [lib.split('.')[0] for lib in libs]
-                    count = 0
-                    actual_libs = np.unique(actual_libs)
-                    # print("actual:", actual_libs)
-                    # print("predict:", libs)
-                    # print("#######")
-                    if len(actual_libs) == 1 and actual_libs[0] == '__builtins__':
-                        continue
-                    for a_l in actual_libs:
-                        if a_l in libs and a_l != '__builtins__':
-                            count = 1
-                    acc_list.append(count)
-
-        acc_list = np.array(acc_list)
-        print(np.mean(acc_list))
-        np.save('./{}_acc_list'.format(data_type), acc_list)
-
-            
         
