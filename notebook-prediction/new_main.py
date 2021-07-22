@@ -30,8 +30,8 @@ TEST_LIST = ['aptos2019-blindness-detection', 'ga-customer-revenue-prediction', 
 
 if __name__ == "__main__":
     mode = 'inference_gen'
-    data_type = 'train'
-    # data_type = 'fake'
+    # data_type = 'train'
+    data_type = 'fake'
     # model_type = 'doc2vec'
     model_type = 'codeBERT'
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -601,7 +601,7 @@ if __name__ == "__main__":
         model.load_state_dict(torch.load(output_dir),strict=False)  
 
         df = pd.read_csv("{}_loc_dataset.csv".format(data_type))
-        codebase_embed = np.load("train_split4/{}_embed_list_total.npy".format(data_type))
+        codebase_embed = np.load("{}_embed_list_{}.npy".format(data_type, model_type))
 
         gen = Generator(768, 768).to(device)
         # gen.load_state_dict(torch.load('./gen_saved/best_gen_state_dict.pt'))
