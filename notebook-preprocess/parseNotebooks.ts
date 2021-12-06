@@ -19,7 +19,5 @@ const notebook = new Notebook(ipynb_json);
 
 const source_list: string[] = notebook.getAllCode()
 
-console.log(source_list)
-
 const file = fs.writeFileSync(`${out_path}/${name}.py`, source_list.join(''), 'utf8')
 

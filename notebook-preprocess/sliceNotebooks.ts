@@ -17,18 +17,7 @@ const ipynb_json = JSON.parse(fs.readFileSync(in_path, 'utf8'));
 
 const notebook = new Notebook(ipynb_json);
 
-// console.log(notebook.getAllCode())
-
 try {
-    // notebook.extractEDA(out_path, name);
-    notebook.convertNotebookToEDA(out_path, name);
+    notebook.extractEDA(out_path, name);
+    // notebook.convertNotebookToEDA(out_path, name);
 }catch {}
-
-// console.log(notebook.getFuncs(3));
-
-// var loc_set = notebook.slice(4, SliceDirection.Backward);
-
-// for (let loc of loc_set.items) {
-//   console.log(notebook.getCodeByLoc(loc));
-// }
-
