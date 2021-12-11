@@ -1,4 +1,4 @@
-# Notebooks Preprocess
+# Notebook Preprocess
 Slice/augment jupyter notebooks into code pieces. Although the preprocessed dataset has already provided, you could process additional notebooks here.
 ## Instructions
 Make sure you have download the dataset, and put it in the preceding folder named "notebooks-full"../notebooks-full
