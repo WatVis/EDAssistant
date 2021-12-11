@@ -6,3 +6,5 @@ unzip -q ./notebooks-full.zip
 unzip -q ./notebooks-locset.zip 
 unzip -q ./notebooks-noMD.zip 
 ```
+
+requirements: tree_sitter

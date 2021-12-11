@@ -207,7 +207,7 @@ def get_embedding(code, device, model, libs = None):
   return model(code_inputs=code_inputs,attn_mask=attn_mask,position_idx=position_idx)
 
 def readNotebookAsRaw(competition, kernel_id):
-    source_path = '../../kaggle-dataset/notebooks-full/'
+    source_path = '../notebooks-full/'
     file_path = "{}/{}/{}.ipynb".format(source_path, competition, kernel_id.split('_')[0])
     nb = nbformat.read(file_path, nbformat.NO_CONVERT)
     markdowns = [] # list of markdown for each code-markdown pair
@@ -222,7 +222,7 @@ def readNotebookAsRaw(competition, kernel_id):
     return source
 
 def readNotebookWithNoMD(competition, kernel_id):
-    source_path = '../../kaggle-dataset/notebooks-noMD'
+    source_path = '../notebooks-noMD'
     file_path = "{}/{}/{}.py".format(source_path, competition, kernel_id.split('_')[0])
     with open(file_path) as f:
       source = f.readlines()

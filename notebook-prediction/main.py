@@ -1,8 +1,3 @@
-# from new_cache_dataset import * 
-# from new_codebase import *
-# from new_to_embedding import *
-# from train_gen import *
-# from inference import *
 from model import BertModel, Generator, LibClassifier
 import torch
 from torch.utils.data import random_split, Dataset, DataLoader, SequentialSampler, RandomSampler,TensorDataset
@@ -21,19 +16,39 @@ from utils import *
 from gensim.models.doc2vec import Doc2Vec
 import tokenize
 from io import BytesIO
+import argparse
 
-### TODO: move to utils
+parser = argparse.ArgumentParser()
+parser.add_argument('--mode', type=str, required=True, choices={'parse', 'combine', 'embed', 'train_gen', 'create_clf_dict', \
+                                                'train_clf', 'valid_gen', 'inference_gen', 'inference_clf', 'valid_clf'},
+    help='the purpose of the script: [parse, combine, embed, embed_doc2vec, train_gen, create_clf_dict, \
+                                        train_clf, valid_gen, inference_gen, inference_clf, valid_clf]')
+
+parser.add_argument('--data_type', type=str, required=True, choices={'train', 'test', 'valid', 'fake'},
+    help='the source of data type: [train, test, valid, fake(for debug)]')
+
+parser.add_argument('--model_type', type=str, required=True, choices={'codeBERT', 'doc2vec'},
+    help='decide what type of the model is the script for: [codeBERT, doc2vec]')
+
 
 TRAIN_LIST = ['planet-understanding-the-amazon-from-space', 'tensorflow2-question-answering', 'nomad2018-predict-transparent-conductors', 'two-sigma-financial-news', 'machinery-tube-pricing', 'ieee-fraud-detection', 'rsna-intracranial-hemorrhage-detection', 'denoising-dirty-documents', 'traveling-santa-problem', 'detecting-insults-in-social-commentary', 'Kannada-MNIST', 'imaterialist-fashion-2019-FGVC6', 'home-depot-product-search-relevance', 'tmdb-box-office-prediction', 'deepfake-detection-challenge', 'global-wheat-detection', 'demand-forecasting-kernels-only', 'vsb-power-line-fault-detection', 'pkdd-15-taxi-trip-time-prediction-ii', 'santander-value-prediction-challenge', 'introducing-kaggle-scripts', 'nips-2017-non-targeted-adversarial-attack', 'icdm-2015-drawbridge-cross-device-connections', 'rsna-str-pulmonary-embolism-detection', 'favorita-grocery-sales-forecasting', 'pubg-finish-placement-prediction', 'bosch-production-line-performance', 'predict-west-nile-virus', 'google-football', 'finding-elo', 'lyft-motion-prediction-autonomous-vehicles', 'covid19-global-forecasting-week-1', 'open-images-2019-object-detection', 'landmark-recognition-challenge', 'santas-uncertain-bags', 'yelp-restaurant-photo-classification', 'covid19-global-forecasting-week-3', 'airbnb-recruiting-new-user-bookings', 'mercari-price-suggestion-challenge', 'tweet-sentiment-extraction', 'challenges-in-representation-learning-facial-expression-recognition-challenge', 'hashcode-photo-slideshow', 'nips-2017-defense-against-adversarial-attack', 'ghouls-goblins-and-ghosts-boo', 'sf-crime', 'recruit-restaurant-visitor-forecasting', 'coupon-purchase-prediction', 'seizure-prediction', '20-newsgroups-ciphertext-challenge', 'hashcode-drone-delivery', 'PLAsTiCC-2018', 'stumbleupon', 'melbourne-university-seizure-prediction', 'movie-review-sentiment-analysis-kernels-only', 'prostate-cancer-grade-assessment', 'expedia-hotel-recommendations', 'march-machine-learning-mania-2015', 'talkingdata-adtracking-fraud-detection', 'm5-forecasting-accuracy', 'homesite-quote-conversion', 'DontGetKicked', 'whats-cooking', 'amazon-employee-access-challenge', 'trackml-particle-identification', 'bigquery-geotab-intersection-congestion', 'tensorflow-speech-recognition-challenge', 'dog-breed-identification', 'nips-2017-targeted-adversarial-attack', 'costa-rican-household-poverty-prediction', 'gendered-pronoun-resolution', 'freesound-audio-tagging-2019', 'jigsaw-unintended-bias-in-toxicity-classification', 'text-normalization-challenge-english-language', 'forest-cover-type-prediction', 'state-farm-distracted-driver-detection', 'bioresponse', 'zillow-prize-1', 'iwildcam-2020-fgvc7', 'google-quest-challenge', 'cat-in-the-dat-ii', 'walmart-recruiting-store-sales-forecasting', 'inclusive-images-challenge', 'santa-gift-matching', 'predict-who-is-more-influential-in-a-social-network', 'crowdflower-search-relevance', 'passenger-screening-algorithm-challenge', 'microsoft-malware-prediction', 'nyc-taxi-trip-duration', 'landmark-retrieval-challenge', 'carvana-image-masking-challenge', 'tradeshift-text-classification', 'landmark-recognition-2019', 'whats-cooking-kernels-only', 'the-winton-stock-market-challenge', 'herbarium-2020-fgvc7', 'osic-pulmonary-fibrosis-progression', 'youtube8m', 'conways-reverse-game-of-life-2020', 'draper-satellite-image-chronology', 'telstra-recruiting-network', 'dont-call-me-turkey', 'random-acts-of-pizza', 'generative-dog-images', 'aerial-cactus-identification', 'allstate-claims-severity', 'nfl-big-data-bowl-2020', 'imet-2020-fgvc7', 'petfinder-adoption-prediction', 'jigsaw-toxic-comment-classification-challenge', 'walmart-recruiting-trip-type-classification', 'mens-machine-learning-competition-2018', 'kkbox-churn-prediction-challenge', 'intel-mobileodt-cervical-cancer-screening', 'porto-seguro-safe-driver-prediction', 'santa-workshop-tour-2019', 'halite', '3d-object-detection-for-autonomous-vehicles', 'santa-2019-revenge-of-the-accountants', 'galaxy-zoo-the-galaxy-challenge', 'donorschoose-application-screening', 'open-images-2019-visual-relationship', 'allstate-purchase-prediction-challenge', 'FacebookRecruiting', 'diabetic-retinopathy-detection', 'santander-customer-satisfaction', 'facebook-recruiting-iii-keyword-extraction', 'march-machine-learning-mania-2016', 'covid19-global-forecasting-week-2', 'instant-gratification', 'abstraction-and-reasoning-challenge', 'humpback-whale-identification', 'crowdflower-weather-twitter', 'cat-in-the-dat', 'data-science-bowl-2019', 'understanding_cloud_organization', 'GiveMeSomeCredit', 'jigsaw-multilingual-toxic-comment-classification', 'youtube8m-2019', 'grupo-bimbo-inventory-demand', 'elo-merchant-category-recommendation', 'painter-by-numbers', 'dstl-satellite-imagery-feature-detection', 'LANL-Earthquake-Prediction', 'msk-redefining-cancer-treatment', 'talkingdata-mobile-user-demographics', 'lish-moa', 'covid19-global-forecasting-week-4', 'poker-rule-induction', 'new-york-city-taxi-fare-prediction', 'alaska2-image-steganalysis', 'landmark-retrieval-2019', 'liberty-mutual-group-property-inspection-prediction', 'quora-question-pairs', 'cdiscount-image-classification-challenge', 'invasive-species-monitoring', 'recursion-cellular-image-classification', 'inaturalist-challenge-at-fgvc-2017', 'covid19-local-us-ca-forecasting-week-1', 'higgs-boson', 'bluebook-for-bulldozers', 'womens-machine-learning-competition-2018', 'transfer-learning-on-stack-exchange-tags', 'march-machine-learning-mania-2017', 'ciphertext-challenge-ii', 'data-science-bowl-2017', 'imaterialist-challenge-furniture-2018', 'imaterialist-fashion-2020-fgvc7', 'siim-isic-melanoma-classification', 'springleaf-marketing-response', 'see-click-predict-fix', 'recognizing-faces-in-the-wild', 'pku-autonomous-driving', 'multilabel-bird-species-classification-nips2013', 'imaterialist-challenge-fashion-2018', 'open-images-2019-instance-segmentation', 'conway-s-reverse-game-of-life', 'plant-seedlings-classification', 'noaa-fisheries-steller-sea-lion-population-count', 'womens-machine-learning-competition-2019', 'landmark-recognition-2020', 'trec-covid-information-retrieval', 'traveling-santa-2018-prime-paths', 'kuzushiji-recognition', 'imet-2019-fgvc6', 'spooky-author-identification', 'rsna-pneumonia-detection-challenge', 'instacart-market-basket-analysis', 'santander-customer-transaction-prediction', 'ciphertext-challenge-iii', 'sp-society-camera-model-identification']
 VALID_LIST = ['restaurant-revenue-prediction', 'google-cloud-ncaa-march-madness-2020-division-1-womens-tournament', 'sentiment-analysis-on-movie-reviews', 'bnp-paribas-cardif-claims-management', 'plant-pathology-2020-fgvc7', 'dsg-hackathon', 'flavours-of-physics', 'inaturalist-2019-fgvc6', 'google-ai-open-images-visual-relationship-track', 'covid19-global-forecasting-week-5', 'google-cloud-ncaa-march-madness-2020-division-1-mens-tournament', 'dont-overfit-ii', 'leaf-classification', 'stanford-covid-vaccine', 'trends-assessment-prediction', 'avazu-ctr-prediction', 'integer-sequence-learning', 'reducing-commercial-aviation-fatalities', 'loan-default-prediction', 'text-normalization-challenge-russian-language', 'kobe-bryant-shot-selection', 'home-credit-default-risk', 'human-protein-atlas-image-classification', 'predicting-red-hat-business-value', 'cifar-10', 'avito-duplicate-ads-detection', 'expedia-personalized-sort', 'liverpool-ion-switching', 'avito-demand-prediction', 'rossmann-store-sales', 'santas-stolen-sleigh', 'iwildcam-2019-fgvc6', 'flavours-of-physics-kernels-only', 'two-sigma-financial-modeling', 'career-con-2019', 'the-nature-conservancy-fisheries-monitoring', 'dogs-vs-cats', 'how-much-did-it-rain-ii', 'avito-context-ad-clicks', 'pkdd-15-predict-taxi-service-trajectory-i', 'asap-aes', 'birdsong-recognition', 'ultrasound-nerve-segmentation', 'youtube8m-2018', 'unimelb', 'web-traffic-time-series-forecasting', 'airbus-ship-detection', 'event-recommendation-engine-challenge', 'second-annual-data-science-bowl', 'tgs-salt-identification-challenge', 'prudential-life-insurance-assessment', 'hivprogression', 'google-ai-open-images-object-detection-track', 'cvpr-2018-autonomous-driving', 'landmark-retrieval-2020', 'bike-sharing-demand', 'how-much-did-it-rain', 'mercedes-benz-greener-manufacturing', 'freesound-audio-tagging', 'bengaliai-cv19', 'statoil-iceberg-classifier-challenge', 'kddcup2012-track2', 'quora-insincere-questions-classification', 'data-science-bowl-2018', 'shelter-animal-outcomes', 'job-salary-prediction', 'dogs-vs-cats-redux-kernels-edition']
 TEST_LIST = ['aptos2019-blindness-detection', 'ga-customer-revenue-prediction', 'histopathologic-cancer-detection', 'mens-machine-learning-competition-2019', 'champs-scalar-coupling', 'whale-categorization-playground', 'flower-classification-with-tpus', 'sberbank-russian-housing-market', 'outbrain-click-prediction', 'two-sigma-connect-rental-listing-inquiries', 'facebook-v-predicting-check-ins', 'quickdraw-doodle-recognition', 'otto-group-product-classification-challenge', 'acquire-valued-shoppers-challenge', 'grasp-and-lift-eeg-detection', 'ashrae-energy-prediction', 'forest-cover-type-kernels-only', 'siim-acr-pneumothorax-segmentation', 'santander-product-recommendation', 'severstal-steel-defect-detection', 'm5-forecasting-uncertainty', 'kkbox-music-recommendation-challenge']
 
+def mkdirIfNotExists(path):
+  if not os.path.exists(path):
+    os.mkdir(path)
+
 if __name__ == "__main__":
-    mode = 'inference_gen'
-    # data_type = 'train'
-    data_type = 'fake'
-    # model_type = 'doc2vec'
-    model_type = 'codeBERT'
+    args = parser.parse_args()
+    # parse, combine, embed, train_gen, create_clf_dict, train_clf, valid_gen, inference_gen, inference_clf, valid_clf
+    mode = args.mode
+    # train, test, valid, fake(debug)
+    data_type = args.data_type
+    # doc2vec, codeBERT
+    model_type = args.model_type
+    print(mode, data_type, model_type)
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     class customDataset(Dataset):
         def __init__(self, file_path):
@@ -76,7 +91,6 @@ if __name__ == "__main__":
     class genDataset(Dataset):
         def __init__(self, df_file, embed_file, with_libs=False, competition_filter=None):
             df = pd.read_csv(df_file)
-            # TODO: filter out some competitions to be the training set
             self.embed_arr = np.load(embed_file)
             self.raw_embed = self.embed_arr
 
@@ -131,9 +145,10 @@ if __name__ == "__main__":
         print("start parsing...")
         cpu_cont = 6
         if data_type == 'fake':
-            file_path = '../../kaggle-dataset/notebooks-locset-fake/'
+            # TODO
+            file_path = '../notebooks-locset-fake/'
         else:
-            file_path = '../../kaggle-dataset/notebooks-locset/'
+            file_path = '../notebooks-locset/'
         dirpath, dirnames, _ = next(os.walk(file_path))
         file_list = []
         
@@ -209,99 +224,77 @@ if __name__ == "__main__":
         #     del cache_data
 
     if mode == 'embed':
-        print("loading model...")
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu") 
-        config = RobertaConfig.from_pretrained(config_name if config_name else model_name_or_path)
-        model = RobertaModel.from_pretrained(model_name_or_path)    
-        model = BertModel(model).to(device)
-        checkpoint_prefix = 'checkpoint-best-mrr/model.bin'
-        output_dir = os.path.join('./saved_models/python', '{}'.format(checkpoint_prefix))  
-        model.load_state_dict(torch.load(output_dir),strict=False) 
-        
-        # loc = np.load("./valid_code_ids.npy")
-        # loa = np.load("./valid_attn_mask.npy")
-        # lop = np.load("./valid_position_idx.npy")
-        # batch_size = 32
-        # length = loc.shape[0]
-        # lobc = np.split(loc, np.arange(batch_size, length, batch_size))
-        # loba = np.split(loa, np.arange(batch_size, length, batch_size))
-        # lobp = np.split(lop, np.arange(batch_size, length, batch_size))
-        # for idx in range(4):
-        embed_list = []
-        print("loading dataset...")
-        # dataset = customDataset("train_split4/{}_cache_{}.pkl".format(data_type, idx))
-        dataset = customDataset("{}_cache.pkl".format(data_type))
-        loader = DataLoader(dataset, batch_size=32, shuffle=False, drop_last=False)
-        for data in tqdm(loader, total=len(loader)):
-            # bc = torch.from_numpy(lobc[idx])
-            # ba = torch.from_numpy(loba[idx])
-            # bp = torch.from_numpy(lobp[idx])
-            bc, ba, bp = data
-            embed = to_embedding((bc, ba, bp), model, device).cpu().detach().numpy()
-            embed_list.append(embed)
+        if model_type == 'codeBERT':
+            print("loading model...")
+            device = torch.device("cuda" if torch.cuda.is_available() else "cpu") 
+            config = RobertaConfig.from_pretrained(config_name if config_name else model_name_or_path)
+            model = RobertaModel.from_pretrained(model_name_or_path)    
+            model = BertModel(model).to(device)
+            embed_list = []
+            print("loading dataset...")
+            # dataset = customDataset("train_split4/{}_cache_{}.pkl".format(data_type, idx))
+            dataset = customDataset("{}_cache.pkl".format(data_type))
+            loader = DataLoader(dataset, batch_size=32, shuffle=False, drop_last=False)
+            for data in tqdm(loader, total=len(loader)):
+                bc, ba, bp = data
+                embed = to_embedding((bc, ba, bp), model, device).cpu().detach().numpy()
+                embed_list.append(embed)
 
-        final_arr = np.concatenate(embed_list, axis=0)
-        print(final_arr.shape)
-        np.save("{}_embed_list".format(data_type), final_arr)
+            final_arr = np.concatenate(embed_list, axis=0)
+            print(final_arr.shape)
+            np.save("{}_embed_list_{}".format(model_type), final_arr)
 
-        # data.append(np.load("train_split4/train_embed_list_0.npy"))
-        # data.append(np.load("train_split4/train_embed_list_1.npy"))
-        # data.append(np.load("train_split4/train_embed_list_2.npy"))
-        # data.append(np.load("train_split4/train_embed_list_3.npy"))
-        # final = np.concatenate(data, axis=0)
-        # np.save("train_split4/train_embed_list_total", final)
-
-    if mode == 'embed_doc2vec':
-        def tokenize_code(code, cell_type="code"):
-            # if markdown or raw, split with " "
-            if cell_type != "code":
-                return []
+        elif model_type == 'doc2vec':
+            def tokenize_code(code, cell_type="code"):
+                # if markdown or raw, split with " "
+                if cell_type != "code":
+                    return []
+                
+                tokenized_code = []
+                tokens = []
+                
+                try:
+                    tokens = tokenize.tokenize(BytesIO(code.encode()).readline)
+                except (SyntaxError, tokenize.TokenError, IndentationError, AttributeError):
+                    return []
+                try:
+                    # tokens is a generator function, so we need to also catch exceptions when calling it
+                    for tok in tokens:
+                        ret = ""
+                        # first token is always utf-8, ignore it
+                        if (tok.string == "utf-8"):
+                            continue
+                        # type 4 is NEWLINE
+                        elif (tok.type == 4 or tok.type == 61):
+                            ret = "[NEWLINE]"
+                        # type 5 is INDENT
+                        elif (tok.type == 5):
+                            ret = "[INDENT]"
+                        else:
+                            ret = tok.string
+                            # print(tok)
+                            # print(f"Type: {tok.exact_type}\nString: {tok.string}\nStart: {tok.start}\nEnd: {tok.end}\nLine: {tok.line.strip()}\n======\n")
+                        tokenized_code.append(ret)
+                    return tokenized_code
+                except (SyntaxError, tokenize.TokenError, IndentationError, AttributeError):
+                    return []
             
-            tokenized_code = []
-            tokens = []
-            
-            try:
-                tokens = tokenize.tokenize(BytesIO(code.encode()).readline)
-            except (SyntaxError, tokenize.TokenError, IndentationError, AttributeError):
-                return []
-            try:
-                # tokens is a generator function, so we need to also catch exceptions when calling it
-                for tok in tokens:
-                    ret = ""
-                    # first token is always utf-8, ignore it
-                    if (tok.string == "utf-8"):
-                        continue
-                    # type 4 is NEWLINE
-                    elif (tok.type == 4 or tok.type == 61):
-                        ret = "[NEWLINE]"
-                    # type 5 is INDENT
-                    elif (tok.type == 5):
-                        ret = "[INDENT]"
-                    else:
-                        ret = tok.string
-                        # print(tok)
-                        # print(f"Type: {tok.exact_type}\nString: {tok.string}\nStart: {tok.start}\nEnd: {tok.end}\nLine: {tok.line.strip()}\n======\n")
-                    tokenized_code.append(ret)
-                return tokenized_code
-            except (SyntaxError, tokenize.TokenError, IndentationError, AttributeError):
-                return []
-        
-        df = pd.read_csv("{}_loc_dataset.csv".format(data_type))
-        model = Doc2Vec.load("doc2vec_model/notebook-doc2vec-model-apr24.model")
-        embed_list = []
+            df = pd.read_csv("{}_loc_dataset.csv".format(data_type))
+            model = Doc2Vec.load("doc2vec_model/notebook-doc2vec-model-apr24.model")
+            embed_list = []
 
-        for index, row in tqdm(df.iterrows(), total=df.shape[0]):
-            competition = row["competition"]
-            kernel_id = row["kernel_id"]
-            usages = row["usages"]
-            source = ''.join(extractLoc(readNotebookWithNoMD(competition, kernel_id), row['loc']))
+            for index, row in tqdm(df.iterrows(), total=df.shape[0]):
+                competition = row["competition"]
+                kernel_id = row["kernel_id"]
+                usages = row["usages"]
+                source = ''.join(extractLoc(readNotebookWithNoMD(competition, kernel_id), row['loc']))
 
-            embed = model.infer_vector(tokenize_code(source)).reshape(1, 768)
-            embed_list.append(embed)
+                embed = model.infer_vector(tokenize_code(source)).reshape(1, 768)
+                embed_list.append(embed)
 
-        final_arr = np.concatenate(embed_list, axis=0)
-        print(final_arr.shape)
-        np.save("train_embed_list_doc2vec", final_arr)
+            final_arr = np.concatenate(embed_list, axis=0)
+            print(final_arr.shape)
+            np.save("train_embed_list_{}".format(model_type), final_arr)
 
     if mode == 'train_gen':
         def collate_fn_padd(batch):
@@ -362,26 +355,18 @@ if __name__ == "__main__":
         df_file = "{}_loc_dataset.csv".format(data_type)
         embed_file = "{}_embed_list_{}.npy".format(data_type, model_type)
 
-        # dataset = genDataset(df_file, embed_file)
-        # train_size = int(len(dataset) * 0.7)
-        # valid_size = int(len(dataset) * 0.2)
-        # test_size = len(dataset) - train_size - valid_size
-        # train_dataset, valid_dataset, test_dataset = random_split(dataset, [train_size, valid_size, test_size], generator=torch.Generator().manual_seed(0))
-        # train_loader = DataLoader(train_dataset, batch_size=32, collate_fn=collate_fn_padd, shuffle=True)
-        # valid_loader = DataLoader(valid_dataset, batch_size=32, collate_fn=collate_fn_padd, shuffle=False)
         train_dataset = genDataset(df_file, embed_file, with_libs=False, competition_filter=TRAIN_LIST)
         valid_dataset = genDataset(df_file, embed_file, with_libs=False, competition_filter=VALID_LIST)
         print(len(train_dataset), len(valid_dataset))
         train_loader = DataLoader(train_dataset, batch_size=32, collate_fn=collate_fn_padd, shuffle=True)
         valid_loader = DataLoader(valid_dataset, batch_size=32, collate_fn=collate_fn_padd, shuffle=False)
 
-        save_path = "./selected_models/gen_cosine_doc2vec_newsplit"
-        # save_path = "./selected_models/gen_cosine_codeBERT_newsplit"
+        mkdirIfNotExists("./selected_models")
+        save_path = "./selected_models/gen_{}".format(model_type)
+        mkdirIfNotExists(save_path)
 
         gen = Generator(768, 768).to(device)
         # gen = torch.load(save_path + "/last_gen.pt")
-        # optimizer_gen = torch.optim.Adam(gen.parameters(), lr=2e-5) 
-        # optimizer_gen = torch.optim.Adam(gen.parameters(), lr=5e-6) 
         optimizer_gen = torch.optim.Adam(gen.parameters(), lr=1e-6) 
         eval_loss_list = []
 
@@ -518,7 +503,6 @@ if __name__ == "__main__":
         class validDataset(Dataset):
             def __init__(self, df_file, embed_file):
                 df = pd.read_csv(df_file)
-                # TODO: filter out some competitions to be the training set
                 self.embed_arr = np.load(embed_file)
                 split_idx = df.index[df['cell_no'] == 0].tolist()
                 self.cell_idx = []
@@ -574,7 +558,6 @@ if __name__ == "__main__":
                 for idx in range(2, length):
                     predict_embed = gen.valid_embedding(notebook_embeds[:idx])
                     actual_embed = notebook_embeds[idx]
-                    # TODO: check if notebook_embeds[idx] == embed_arr[start+idx]
                     # print(notebook_embeds[idx].mean(), embed_arr[start+idx-1].mean())
                     # predict_embed = torch.randn(1, 768).to(device)
                     result = torch.argsort(torch.einsum("ij,ij->i",embed_arr,predict_embed), descending=True).detach().cpu().numpy()
@@ -596,22 +579,20 @@ if __name__ == "__main__":
         tokenizer = RobertaTokenizer.from_pretrained(tokenizer_name)
         model = RobertaModel.from_pretrained(model_name_or_path)    
         model=BertModel(model).to(device)
-        checkpoint_prefix = 'checkpoint-best-mrr/model.bin'
-        output_dir = os.path.join('./saved_models/python', '{}'.format(checkpoint_prefix))  
-        model.load_state_dict(torch.load(output_dir),strict=False)  
+        # checkpoint_prefix = 'checkpoint-best-mrr/model.bin'
+        # output_dir = os.path.join('./saved_models/python', '{}'.format(checkpoint_prefix))  
+        # model.load_state_dict(torch.load(output_dir),strict=False)  
 
         df = pd.read_csv("{}_loc_dataset.csv".format(data_type))
         codebase_embed = np.load("{}_embed_list_{}.npy".format(data_type, model_type))
 
         gen = Generator(768, 768).to(device)
-        # gen.load_state_dict(torch.load('./gen_saved/best_gen_state_dict.pt'))
-        gen.load_state_dict(torch.load('./selected_models/gen_cosine_codeBERT_newsplit/best_gen_state_dict.pt'))
+        gen.load_state_dict(torch.load("./selected_models/gen_{}/best_gen_state_dict.pt".format(model_type)))
         gen.eval()
         with torch.no_grad():
             while(True):
                 print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-                input("Update the sample.py and press Enter to continue...")
-                # TODO: reads ipynb
+                input("Update the sample.ipynb and press Enter to continue...")
                 input_file = './sample.ipynb'
                 embed_list = [torch.zeros((1,768)).to(device)]
                 f = codecs.open(input_file, 'r')
@@ -678,7 +659,6 @@ if __name__ == "__main__":
             while(True):
                 print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
                 input("Update the sample.py and press Enter to continue...")
-                # TODO: reads ipynb
                 input_file = './sample.ipynb'
                 embed_list = [torch.zeros((1,768)).to(device)]
                 f = codecs.open(input_file, 'r')
