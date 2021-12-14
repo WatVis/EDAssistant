@@ -39,12 +39,23 @@ Generate bert embedding for code
 ```sh
 nohup python main.py --mode=embed --data_type=train --model_type=codeBERT &
 ```
-### Train the search engine
+## Train the search engine
 ```sh
 nohup python main.py --mode=train_gen --data_type=train --model_type=codeBERT &
 ```
-### Inference on the example notebook.
+## Inference on the example notebook.
 The inference script will read the sample.ipynb and search for the top n related notebooks in the codebase.
 ```sh
-python main.py --mode=inference_gen --data_type=train --model_type=codeBERT
+python main.py --mode=valid_gen --data_type=train --model_type=codeBERT
 ```
+## Create Library dictionary for Classification
+create clf_dict, update number of libraries included
+```sh
+python main.py --mode=create_clf_dict --data_type=train --model_type=codeBERT
+```
+## Train the classification model
+```sh
+nohup python main.py --mode=train_clf --data_type=train --model_type=codeBERT &
+```
+## Inference on the example notebook.
+python main.py --mode=inference_clf --data_type=train --model_type=codeBERT
