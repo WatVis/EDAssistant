@@ -35,6 +35,8 @@ TRAIN_LIST = ['planet-understanding-the-amazon-from-space', 'tensorflow2-questio
 VALID_LIST = ['restaurant-revenue-prediction', 'google-cloud-ncaa-march-madness-2020-division-1-womens-tournament', 'sentiment-analysis-on-movie-reviews', 'bnp-paribas-cardif-claims-management', 'plant-pathology-2020-fgvc7', 'dsg-hackathon', 'flavours-of-physics', 'inaturalist-2019-fgvc6', 'google-ai-open-images-visual-relationship-track', 'covid19-global-forecasting-week-5', 'google-cloud-ncaa-march-madness-2020-division-1-mens-tournament', 'dont-overfit-ii', 'leaf-classification', 'stanford-covid-vaccine', 'trends-assessment-prediction', 'avazu-ctr-prediction', 'integer-sequence-learning', 'reducing-commercial-aviation-fatalities', 'loan-default-prediction', 'text-normalization-challenge-russian-language', 'kobe-bryant-shot-selection', 'home-credit-default-risk', 'human-protein-atlas-image-classification', 'predicting-red-hat-business-value', 'cifar-10', 'avito-duplicate-ads-detection', 'expedia-personalized-sort', 'liverpool-ion-switching', 'avito-demand-prediction', 'rossmann-store-sales', 'santas-stolen-sleigh', 'iwildcam-2019-fgvc6', 'flavours-of-physics-kernels-only', 'two-sigma-financial-modeling', 'career-con-2019', 'the-nature-conservancy-fisheries-monitoring', 'dogs-vs-cats', 'how-much-did-it-rain-ii', 'avito-context-ad-clicks', 'pkdd-15-predict-taxi-service-trajectory-i', 'asap-aes', 'birdsong-recognition', 'ultrasound-nerve-segmentation', 'youtube8m-2018', 'unimelb', 'web-traffic-time-series-forecasting', 'airbus-ship-detection', 'event-recommendation-engine-challenge', 'second-annual-data-science-bowl', 'tgs-salt-identification-challenge', 'prudential-life-insurance-assessment', 'hivprogression', 'google-ai-open-images-object-detection-track', 'cvpr-2018-autonomous-driving', 'landmark-retrieval-2020', 'bike-sharing-demand', 'how-much-did-it-rain', 'mercedes-benz-greener-manufacturing', 'freesound-audio-tagging', 'bengaliai-cv19', 'statoil-iceberg-classifier-challenge', 'kddcup2012-track2', 'quora-insincere-questions-classification', 'data-science-bowl-2018', 'shelter-animal-outcomes', 'job-salary-prediction', 'dogs-vs-cats-redux-kernels-edition']
 TEST_LIST = ['aptos2019-blindness-detection', 'ga-customer-revenue-prediction', 'histopathologic-cancer-detection', 'mens-machine-learning-competition-2019', 'champs-scalar-coupling', 'whale-categorization-playground', 'flower-classification-with-tpus', 'sberbank-russian-housing-market', 'outbrain-click-prediction', 'two-sigma-connect-rental-listing-inquiries', 'facebook-v-predicting-check-ins', 'quickdraw-doodle-recognition', 'otto-group-product-classification-challenge', 'acquire-valued-shoppers-challenge', 'grasp-and-lift-eeg-detection', 'ashrae-energy-prediction', 'forest-cover-type-kernels-only', 'siim-acr-pneumothorax-segmentation', 'santander-product-recommendation', 'severstal-steel-defect-detection', 'm5-forecasting-uncertainty', 'kkbox-music-recommendation-challenge']
 
+LIB_COUNT = int(open('lib_count.txt').readline())
+
 def mkdirIfNotExists(path):
   if not os.path.exists(path):
     os.mkdir(path)
@@ -111,9 +113,9 @@ if __name__ == "__main__":
 
             self.with_libs = with_libs
             if self.with_libs:
-                self.lib_dict = pickle.load(open("lib_dict_new.pkl",'rb'))
+                self.lib_dict = pickle.load(open("lib_dict.pkl",'rb'))
                 self.lib_names = df['usages'].to_list()
-                self.lib_count = 19453
+                self.lib_count = LIB_COUNT
                 def get_actual_libs(usage):
                     actual_usages = usage.split(', ')
                     actual_libs = []
@@ -361,8 +363,8 @@ if __name__ == "__main__":
         train_loader = DataLoader(train_dataset, batch_size=32, collate_fn=collate_fn_padd, shuffle=True)
         valid_loader = DataLoader(valid_dataset, batch_size=32, collate_fn=collate_fn_padd, shuffle=False)
 
-        mkdirIfNotExists("./selected_models")
-        save_path = "./selected_models/gen_{}".format(model_type)
+        mkdirIfNotExists("./models")
+        save_path = "./models/gen_{}".format(model_type)
         mkdirIfNotExists(save_path)
 
         gen = Generator(768, 768).to(device)
@@ -407,8 +409,10 @@ if __name__ == "__main__":
                     count += 1
 
         print(count)
+        with open('lib_count.txt', 'w') as f:
+            f.write(str(count))
 
-        pickle.dump(lib_dict,open("lib_dict_new.pkl",'wb'))
+        pickle.dump(lib_dict,open("lib_dict.pkl",'wb'))
 
     if mode == 'train_clf':
         def collate_fn_padd(batch):
@@ -458,24 +462,20 @@ if __name__ == "__main__":
 
         print("creating dataset...")
         df_file = "{}_loc_dataset.csv".format(data_type)
-        # embed_file = "train_split4/{}_embed_list_total.npy".format(data_type)
         embed_file = "{}_embed_list_{}.npy".format(data_type, model_type)
-        # dataset = genDataset(df_file, embed_file, with_libs=True)
-        # train_size = int(len(dataset) * 0.7)
-        # valid_size = int(len(dataset) * 0.2)
-        # test_size = len(dataset) - train_size - valid_size
-        # train_dataset, valid_dataset, test_dataset = random_split(dataset, [train_size, valid_size, test_size], generator=torch.Generator().manual_seed(0))
         train_dataset = genDataset(df_file, embed_file, with_libs=True, competition_filter=TRAIN_LIST)
         valid_dataset = genDataset(df_file, embed_file, with_libs=True, competition_filter=VALID_LIST)
         print(len(train_dataset), len(valid_dataset))
         train_loader = DataLoader(train_dataset, batch_size=32, collate_fn=collate_fn_padd, shuffle=True)
         valid_loader = DataLoader(valid_dataset, batch_size=32, collate_fn=collate_fn_padd, shuffle=False)
 
-        save_path = "./clf_saved_doc2vec_newsplit"
+        mkdirIfNotExists("./models")
+        save_path = "./models/clf_{}".format(model_type)
+        mkdirIfNotExists(save_path)
 
         gen = Generator(768, 768).to(device)
         # gen = torch.load("./gen_consine/best_gen.pt").to(device)
-        clf = LibClassifier(gen, 768, 19453).to(device)
+        clf = LibClassifier(gen, 768, LIB_COUNT).to(device)
         # clf.load_state_dict(torch.load('./clf_saved_new/best_clf_state_dict.pt'))
         # clf = torch.load("./clf_saved/best_clf.pt").to(device)
         optimizer = torch.optim.Adam(clf.parameters(), lr=1e-4) 
@@ -522,25 +522,13 @@ if __name__ == "__main__":
 
         df_file = "{}_loc_dataset.csv".format(data_type)
         embed_file = "{}_embed_list_{}.npy".format(data_type, model_type)
-        # embed_file = "{}_embed_list_{}.npy".format("train", model_type)
 
-        # gen = torch.load("./gen_consine/best_gen.pt").to(device)
         gen = Generator(768, 768).to(device)
-        # model_path = "./selected_models/gen_cosine_doc2vec_newsplit"
-        model_path = "./selected_models/FAKE_gen_cosine_codeBERT_newsplit"
+        model_path = "./models/gen_{}".format(model_type)
         gen.load_state_dict(torch.load('{}/best_gen_state_dict.pt'.format(model_path)))
         gen.eval()
         # model.eval()
         print('start validating')
-
-        # dataset = validDataset(df_file, embed_file)
-        # train_size = int(len(dataset) * 0.7)
-        # valid_size = int(len(dataset) * 0.2)
-        # test_size = len(dataset) - train_size - valid_size
-
-        # embed_arr = torch.from_numpy(dataset.embed_arr).to(device)
-
-        # train_dataset, valid_dataset, test_dataset = random_split(dataset, [train_size, valid_size, test_size], generator=torch.Generator().manual_seed(0))
 
         test_dataset = genDataset(df_file, embed_file, with_libs=False, competition_filter=TEST_LIST)
 
@@ -558,17 +546,11 @@ if __name__ == "__main__":
                 for idx in range(2, length):
                     predict_embed = gen.valid_embedding(notebook_embeds[:idx])
                     actual_embed = notebook_embeds[idx]
-                    # print(notebook_embeds[idx].mean(), embed_arr[start+idx-1].mean())
-                    # predict_embed = torch.randn(1, 768).to(device)
                     result = torch.argsort(torch.einsum("ij,ij->i",embed_arr,predict_embed), descending=True).detach().cpu().numpy()
-                    # print(predict_embed.std())
                     rank_list.append(np.where(result == start + idx-1)[0][0])
-                    # print(rank_list[-1])
-                    # actual_meta = df.loc[start + idx]
-                    # print(actual_meta)
         rank_list = np.array(rank_list)
         print(np.mean(rank_list))
-        np.save('./FAKE_{}_rank_list_valid_newsplit_{}'.format(data_type, model_type), rank_list)
+        np.save('./{}_rank_list_valid_{}'.format(data_type, model_type), rank_list)
 
     if mode == 'inference_gen':
         print("start inferencing...")
@@ -587,7 +569,7 @@ if __name__ == "__main__":
         codebase_embed = np.load("{}_embed_list_{}.npy".format(data_type, model_type))
 
         gen = Generator(768, 768).to(device)
-        gen.load_state_dict(torch.load("./selected_models/gen_{}/best_gen_state_dict.pt".format(model_type)))
+        gen.load_state_dict(torch.load("./models/gen_{}/best_gen_state_dict.pt".format(model_type)))
         gen.eval()
         with torch.no_grad():
             while(True):
@@ -643,16 +625,15 @@ if __name__ == "__main__":
         tokenizer = RobertaTokenizer.from_pretrained(tokenizer_name)
         model = RobertaModel.from_pretrained(model_name_or_path)    
         model=BertModel(model).to(device)
-        checkpoint_prefix = 'checkpoint-best-mrr/model.bin'
-        output_dir = os.path.join('./saved_models/python', '{}'.format(checkpoint_prefix))  
-        model.load_state_dict(torch.load(output_dir),strict=False)  
+        # checkpoint_prefix = 'checkpoint-best-mrr/model.bin'
+        # output_dir = os.path.join('./saved_models/python', '{}'.format(checkpoint_prefix))  
+        # model.load_state_dict(torch.load(output_dir),strict=False)  
 
-        lib_dict = pickle.load(open("lib_dict_new.pkl",'rb'))
+        lib_dict = pickle.load(open("lib_dict.pkl",'rb'))
         lib_dict = {v: k for k, v in lib_dict.items()}
-        # clf = torch.load("./clf_jaccard/best_clf.pt").to(device)
         gen = Generator(768, 768).to(device)
-        clf = LibClassifier(gen, 768, 19453).to(device)
-        clf.load_state_dict(torch.load('./clf_saved_codeBERT/best_clf_state_dict.pt'))
+        clf = LibClassifier(gen, 768, LIB_COUNT).to(device)
+        clf.load_state_dict(torch.load("./models/clf_{}/best_clf_state_dict.pt".format(model_type)))
         clf.eval()
 
         with torch.no_grad():
@@ -703,24 +684,16 @@ if __name__ == "__main__":
 
         print("creating dataset...")
         df_file = "{}_loc_dataset.csv".format(data_type)
-        # embed_file = "train_split4/{}_embed_list_total.npy".format(data_type)
         embed_file = "{}_embed_list_{}.npy".format(data_type, model_type)
-        # dataset = genDataset(df_file, embed_file, with_libs=True)
-        # train_size = int(len(dataset) * 0.7)
-        # valid_size = int(len(dataset) * 0.2)
-        # test_size = len(dataset) - train_size - valid_size
-
-        # train_dataset, valid_dataset, test_dataset = random_split(dataset, [train_size, valid_size, test_size], generator=torch.Generator().manual_seed(0))
 
         test_dataset = genDataset(df_file, embed_file, with_libs=True, competition_filter=TEST_LIST)
         test_loader = DataLoader(test_dataset, batch_size=32, collate_fn=collate_fn_padd, shuffle=False)
 
-        model_pth = "./clf_saved_codeBERT_newsplit"
+        model_pth = "./models/clf_{}".format(model_type)
         gen = Generator(768, 768).to(device)
-        clf = LibClassifier(gen, 768, 19453).to(device)
+        clf = LibClassifier(gen, 768, LIB_COUNT).to(device)
         clf.load_state_dict(torch.load('./{}/best_clf_state_dict.pt'.format(model_pth)))
         clf.eval()
 
         print(eval(test_loader, clf))
-
-        
+    
