@@ -1,0 +1,298 @@
+::-webkit-scrollbar {
+    width: 0;  /* Remove scrollbar space */
+    background: transparent;  /* Optional: just make scrollbar invisible */
+}
+/* Elements in the first panel */
+
+div#DNA_panel {
+  /* background-color: white; */
+  height: 40%;
+  width: 100%;
+}
+
+div#TOP_search_bar {
+  top: 0px;
+  height: 10%;
+  width: 100%;
+}
+
+#legendGroup div {
+  padding: 2px;
+}
+
+/* input#DNA_input {
+  width: 40%;
+} */
+
+i#Recommend_button {
+  float: right;
+  border-radius: 4px;
+  border: 1px solid;
+  padding: 2px;
+}
+
+i#Recommend_button:active {
+  background-color: #ddd;
+  color: black;
+}
+
+div#svg_overflow {
+  height: 80%;
+  width: 100%;
+  overflow: auto;
+}
+
+svg#DNA_svg {
+  /* max-width: 100% !important;
+  min-width: 100% !important; */
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+}
+
+g#drawing {
+  width: auto;
+  /* overflow: visible; */
+}
+
+g#keyword_layer {
+  opacity: 0.5;
+}
+
+.dna_eda_sequence {
+  paint-order: stroke fill;
+  stroke-width: 1.8;
+  stroke: black;
+  fill: white;
+}
+
+div#DNA_pager {
+  margin-bottom: 0;
+}
+
+button#dna_previous {
+  margin-left: 0px;
+  background-color: #f1f1f1;
+  color: black;
+  border-radius: 50%;
+}
+
+button#dna_previous:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+button#dna_next {
+  /* margin-left: auto;
+  margin-right: 0px; */
+  float: right;
+  background-color: #f1f1f1;
+  color: black;
+  border-radius: 50%;
+}
+
+button#dna_next:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+div#tooltip {
+    position: fixed;
+    /* text-align: left; */
+    /* width: 120px;
+    height: 60px; */
+    padding: 2px;
+    font: 12px sans-serif;
+    background: lightsteelblue;
+    border: 0px;
+    border-radius: 8px;
+    pointer-events: none;
+    opacity: 0;
+}
+
+/* text {
+  font-size:0.7em;
+} */
+
+text.keywords {
+  font-size:0.7em;
+  /* color: #BCBCBC; */
+}
+
+
+/* Elements in the second panel */
+
+
+div#Notebook_panel {
+  background-color: white;/*rgb(242, 242, 242); */
+  height: 40%;
+  width: 100%;
+  border-top: 1px solid;
+  border-bottom: 1px solid;
+  position: relative;
+  /* opacity: 30%; */
+  /* overflow-y: scroll; */
+  /* display: flex;
+  flex-flow: column; */
+}
+
+
+div#notebook_detail_container {
+  width: 100%;
+  height: 10%;
+}
+
+i#notebook_details {
+  float: right;
+  border-radius: 4px;
+  border: 1px solid;
+  padding: 2px;
+}
+
+i#notebook_details:active {
+  background-color: #ddd;
+  color: black;
+}
+
+div#notebook_display {
+  background-color:rgb(255, 255, 255);
+  /* margin-top: auto; */
+  height: 80%;
+  width: 100%;
+  /* opacity: 30%; */
+  overflow-y: scroll;
+  /* flex-grow : 1; */
+}
+
+.the_containers {
+    width: 90%;
+    /* border-radius: 8px; */
+    position: relative;
+    left: 5%;
+    /* background-color: #F5F5F5; */
+}
+
+.fake_textarea {
+    -moz-appearance: textfield-multiline;
+    overflow: hidden;
+    white-space: pre;
+}
+
+
+.notebook_panel_code {
+    width: 100%;
+    font-size: 11px;
+    background-color: #F5F5F5;
+    /* border-radius: 10px; */
+    border: 1px #E0E0E0 solid;
+}
+
+div#notebook_button_container {
+  width: 100%;
+  /* height: 10%; */
+  /* flex-grow : 1; */
+  margin-bottom: 0;
+  /* height: 10%; */
+}
+
+/* button#notebook_previous {
+  margin-left: 0px;
+}
+
+button#notebook_next {
+  float: right;
+} */
+
+button#notebook_previous {
+  margin-left: 0px;
+  background-color: #f1f1f1;
+  color: black;
+  border-radius: 50%;
+}
+
+button#notebook_previous:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+button#notebook_next {
+  /* margin-left: auto;
+  margin-right: 0px; */
+  float: right;
+  background-color: #f1f1f1;
+  color: black;
+  border-radius: 50%;
+}
+
+button#notebook_next:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+/* Elements in the third panel */
+
+div#Recommend_panel {
+  width: 100%;
+  height: 20%;
+  /* background-color: blue; */
+  /* opacity: 30%; */
+}
+
+div#Recommend_button_container {
+  top: 0px;
+  width: 100%;
+  height: 20%;
+  position: relative;
+  /* background-color: green; */
+}
+
+div#Recommend_display {
+  height: 80%;
+  width: 100%;
+  overflow-y: scroll;
+}
+
+i#Rec_button {
+  float: right;
+  border-radius: 4px;
+  border: 1px solid;
+  padding: 2px;
+}
+
+i#Rec_button:active {
+  background-color: #ddd;
+  color: black;
+}
+
+.rec_panel_code {
+    width: 100%;
+    font-size: 11px;
+    background-color: #F5F5F5;
+    /* border-radius: 10px; */
+    border: 1px #E0E0E0 solid;
+}
+
+.rec_panel_suggested_code {
+  width: 100%;
+  font-size: 11px;
+  background-color: #F5F5F5;
+  -moz-appearance: textfield-multiline;
+  overflow: hidden;
+  white-space: pre;
+}
+
+.chip {
+  display: inline-block;
+  padding: 0 5px;
+  /* height: 50px; */
+  /* font-size: 16px; */
+  line-height: 30px;
+  border-radius: 5px;
+  background-color: #f1f1f1;
+  /* font-weight: bold; */
+  font-family: Helvetica;
+  color: rgb(56,56,56);
+  /* gaps between tags */
+  margin: 2px;
+  border: white 1px solid;
+}

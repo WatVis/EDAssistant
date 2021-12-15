@@ -1,61 +1,19 @@
-# EDA recommendation
-## Notebook Preprocess
-Slice/augment jupyter notebooks into code pieces. Although the preprocessed dataset has already provided, you could process additional notebooks here.
-### Instructions
-Make sure you have download the dataset, and put it in the preceding folder named "notebooks-full"../notebooks-full
-```sh
-npm i
-npm install -g typescript
-npm i csv-writer
-tsc sliceNotebooks.ts
-tsc parseNotebooks.ts
-slice.sh
-```
-You can change the dataset and thread number in slice.py.
+# EDAssitant
 
-## Notebook Prediction
-Search for related notebooks based on previous code cells. 
-### Dataset
-Make sure you have download/preprocess the dataset, and put it in the preceding folder "notebooks-full".
-The preprocessed dataset can also be downloaded, or you can preprocess your own data using script in notebook-preprocess.
-```sh
-gdown https://drive.google.com/uc?id=1ysSzcl_9Y3pPJvAP-0tp6LsRTtg89Lex
-gdown https://drive.google.com/uc?id=1AWo6kLhRbYevgM-n_C_eJCApx4azf4iK
-gdown https://drive.google.com/uc?id=15mPUxilUX6lGfDdBvijVnLULsMnP0LKP
-unzip -q ./notebooks-full.zip 
-unzip -q ./notebooks-locset.zip 
-unzip -q ./notebooks-noMD.zip 
-```
-### Generate code embeddings
-preprocess the dataset into list of code pieces in memeory
-```sh
-python main.py --mode=parse --data_type=train --model_type=codeBERT
-```
-convert the raw code into the structure that model needs (e.g. for codeBERT, the code will be converted to code_tokens and code_ids), needs 26G memeory
-```sh
-python main.py --mode=combine --data_type=train --model_type=codeBERT
-```
-Generate bert embedding for code
-```sh
-nohup python main.py --mode=embed --data_type=train --model_type=codeBERT &
-```
-## Train the search engine
-```sh
-nohup python main.py --mode=train_gen --data_type=train --model_type=codeBERT &
-```
-## Inference on the example notebook.
-The inference script will read the sample.ipynb and search for the top n related notebooks in the codebase.
-```sh
-python main.py --mode=valid_gen --data_type=train --model_type=codeBERT
-```
-## Create Library dictionary for Classification
-create clf_dict, update number of libraries included
-```sh
-python main.py --mode=create_clf_dict --data_type=train --model_type=codeBERT
-```
-## Train the classification model
-```sh
-nohup python main.py --mode=train_clf --data_type=train --model_type=codeBERT &
-```
-## Inference on the example notebook.
-python main.py --mode=inference_clf --data_type=train --model_type=codeBERT
+EDAssistant is an interactive and visual tool that facilitates exploratory data analysis (EDA) with in-situ code search, exploration, and recommendation based on existing notebook repositories, embedded within the JupyterLab environment for a seamless user experience. 
+
+Based on a large Jupter Notebook corpus collected on Kaggle, EDAssistant employs advanced deep learning models, specially
+GraphCodeBERT, to learn a latent representation (i.e., embeddings) of all the EDA sequences.
+The backend of EDAssistant contains a search engine for retrieving relevant EDA sequences based on a data scientist’s current code and a recommender for potential APIs to use next, which facilitates their EDA with useful examples and suggestions. 
+The frontend of EDAssitant is a visual interface, as a JupyterLab extension, that allows users to conduct EDA while accessing EDAssistant smoothly.
+The user interface also features a novel visualization that provides an informative overview of the search results and the coding patterns in EDA notebooks.
+
+<img src="interface.png" width="100%" />
+Figure Description: A data scientist is conducting EDA on a bank loan default dataset with EDAssistant, which is a JupyterLab extension to offer situated EDA support with three interactively coordinated views for Search Results (b), Notebook Detail (c), and API Suggestion (d).
+
+
+## JupyterLab Extension 
+Follow the instructions in the README.md under the `extension` folder. 
+
+## Backend
+Follow the instructions in the README.md under the `backend` folder. 

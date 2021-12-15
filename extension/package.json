@@ -1,0 +1,85 @@
+{
+  "name": "smart_EDA",
+  "version": "0.1.0",
+  "description": "A JupyterLab extension.",
+  "keywords": [
+    "jupyter",
+    "jupyterlab",
+    "jupyterlab-extension"
+  ],
+  "homepage": "https://github.com/github_username/smarteda",
+  "bugs": {
+    "url": "https://github.com/github_username/smarteda/issues"
+  },
+  "license": "BSD-3-Clause",
+  "author": {
+    "name": "Tim",
+    "email": "xingjunnn.li@gmail.com"
+  },
+  "files": [
+    "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
+    "style/**/*.{css,.js,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
+  ],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "style": "style/index.css",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/github_username/smarteda.git"
+  },
+  "scripts": {
+    "build": "jlpm run build:lib && jlpm run build:labextension:dev",
+    "build:prod": "jlpm run build:lib && jlpm run build:labextension",
+    "build:labextension": "jupyter labextension build .",
+    "build:labextension:dev": "jupyter labextension build --development True .",
+    "build:lib": "tsc",
+    "clean": "jlpm run clean:lib",
+    "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
+    "clean:labextension": "rimraf smarteda/labextension",
+    "clean:all": "jlpm run clean:lib && jlpm run clean:labextension",
+    "eslint": "eslint . --ext .ts,.tsx --fix",
+    "eslint:check": "eslint . --ext .ts,.tsx",
+    "install:extension": "jupyter labextension develop --overwrite .",
+    "prepare": "jlpm run clean && jlpm run build:prod",
+    "watch": "run-p watch:src watch:labextension",
+    "watch:src": "tsc -w",
+    "watch:labextension": "jupyter labextension watch ."
+  },
+  "dependencies": {
+    "@jupyterlab/application": "^3.0.0",
+    "axios": "^0.21.1",
+    "d3": "^7.0.0",
+    "fs": "^0.0.1-security"
+  },
+  "devDependencies": {
+    "@angular/core": "^11.2.4",
+    "@jupyterlab/builder": "^3.0.0",
+    "@jupyterlab/launcher": "^3.0.4",
+    "@jupyterlab/mainmenu": "^3.0.4",
+    "@jupyterlab/notebook": "^3.0.5",
+    "@types/d3": "^7.0.0",
+    "@types/filesystem": "^0.0.29",
+    "@types/node": "^14.14.31",
+    "@typescript-eslint/eslint-plugin": "^4.8.1",
+    "@typescript-eslint/parser": "^4.8.1",
+    "eslint": "^7.14.0",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "highlight.js": "^10.7.2",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.1.1",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "rimraf": "^3.0.2",
+    "typescript": "~4.1.3"
+  },
+  "sideEffects": [
+    "style/*.css",
+    "style/index.js"
+  ],
+  "styleModule": "style/index.js",
+  "jupyterlab": {
+    "extension": true,
+    "outputDir": "smarteda/labextension"
+  }
+}
